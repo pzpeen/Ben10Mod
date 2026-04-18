@@ -8,6 +8,8 @@ import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.pzpeen.ben10mod.Ben10Mod;
+import net.pzpeen.ben10mod.capabilities.power_inventory.PowerInventoryProvider;
+import net.pzpeen.ben10mod.items.ModItems;
 
 
 public class ClientEvents {
@@ -16,10 +18,7 @@ public class ClientEvents {
 
         @SubscribeEvent
         public static void onKeyInput(InputEvent.Key event){
-            if(KeyBinds.POWER_MENU.consumeClick()){
-                assert Minecraft.getInstance().player != null;
-                Minecraft.getInstance().player.sendSystemMessage(Component.literal("Bro vc apertou meu butao >("));
-            }
+            KeyBinds.KeyBindsFunctions.register(event);
         }
     }
 
