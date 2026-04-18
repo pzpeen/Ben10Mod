@@ -1,6 +1,7 @@
 package net.pzpeen.ben10mod;
 
 import com.mojang.logging.LogUtils;
+import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.BuildCreativeModeTabContentsEvent;
@@ -11,6 +12,8 @@ import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.pzpeen.ben10mod.gui.ModMenus;
+import net.pzpeen.ben10mod.gui.menus.PowerInventoryScreen;
 import net.pzpeen.ben10mod.items.ModCreativeTabs;
 import net.pzpeen.ben10mod.items.ModItems;
 import net.pzpeen.ben10mod.networking.ModNetworking;
@@ -29,8 +32,10 @@ public class Ben10Mod
     {
         IEventBus modEventBus = context.getModEventBus();
 
+        ModMenus.register(modEventBus);
         ModCreativeTabs.register(modEventBus);
         ModItems.register(modEventBus);
+
 
         // Register the commonSetup method for modloading
         modEventBus.addListener(this::commonSetup);
@@ -47,6 +52,7 @@ public class Ben10Mod
     {
         event.enqueueWork(() -> {
             ModNetworking.register();
+            MenuScreens.register(ModMenus.POWER_INVENTORY_MENU.get(), PowerInventoryScreen::new);
         });
 
     }

@@ -10,6 +10,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.pzpeen.ben10mod.Ben10Mod;
 import net.pzpeen.ben10mod.capabilities.power_inventory.PowerInventory;
+import net.pzpeen.ben10mod.networking.packets.OpenPowerMenuC2SPacket;
 import net.pzpeen.ben10mod.networking.packets.PowerInventoryS2CPacket;
 
 public class ModNetworking {
@@ -34,6 +35,12 @@ public class ModNetworking {
                 .decoder(PowerInventoryS2CPacket::decode)
                 .encoder(PowerInventoryS2CPacket::encode)
                 .consumerMainThread(PowerInventoryS2CPacket::handle)
+                .add();
+
+        INSTANCE.messageBuilder(OpenPowerMenuC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .encoder(OpenPowerMenuC2SPacket::toBytes)
+                .decoder(OpenPowerMenuC2SPacket::new)
+                .consumerMainThread(OpenPowerMenuC2SPacket::handle)
                 .add();
     }
 

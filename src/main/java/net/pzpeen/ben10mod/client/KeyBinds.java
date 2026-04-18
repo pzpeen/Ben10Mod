@@ -8,6 +8,8 @@ import net.minecraftforge.client.event.InputEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.pzpeen.ben10mod.capabilities.power_inventory.PowerInventoryProvider;
 import net.pzpeen.ben10mod.items.ModItems;
+import net.pzpeen.ben10mod.networking.ModNetworking;
+import net.pzpeen.ben10mod.networking.packets.OpenPowerMenuC2SPacket;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyBinds {
@@ -23,6 +25,7 @@ public class KeyBinds {
         public static void register(InputEvent.Key event){
             //Power Menu
             if(KeyBinds.POWER_MENU.consumeClick()){
+                /*
                 assert Minecraft.getInstance().player != null;
                 Minecraft.getInstance().player.sendSystemMessage(Component.literal("Bro vc apertou meu butao >("));
                 Minecraft.getInstance().player.getCapability(PowerInventoryProvider.PLAYER_POWER_INVENTORY).ifPresent(pwrInv -> {
@@ -33,12 +36,10 @@ public class KeyBinds {
                         Minecraft.getInstance().player.sendSystemMessage(Component.literal("Ta sem omnitrix ze"));
                     }
                 });
+
+                 */
+                ModNetworking.sendToServer(new OpenPowerMenuC2SPacket());
             }
-
-
-
-
-
 
         }
     }

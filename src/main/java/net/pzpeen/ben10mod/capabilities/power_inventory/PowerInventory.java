@@ -17,7 +17,7 @@ public class PowerInventory {
     }
 
     public void loadNBT(CompoundTag nbt){
-        this.pwr_inventory.deserializeNBT(nbt);
+        this.pwr_inventory.deserializeNBT(nbt.getCompound("pwr_inventory"));
     }
 
 }

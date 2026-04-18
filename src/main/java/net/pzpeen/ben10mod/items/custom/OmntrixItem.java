@@ -29,15 +29,8 @@ public class OmntrixItem extends Item {
                     ModNetworking.sendToPlayer(new PowerInventoryS2CPacket(pwrInv.getInventory().serializeNBT()), serverPlayer);
                     pPlayer.sendSystemMessage(Component.literal("Pois omnitrix"));
 
-                }else{
-                    ItemStack pwrItem = pwrInv.getInventory().getStackInSlot(0);
-                    pPlayer.addItem(pwrItem.copyAndClear());
-                    pPlayer.sendSystemMessage(Component.literal("Tirou omnitrix"));
-                    ModNetworking.sendToPlayer(new PowerInventoryS2CPacket(pwrInv.getInventory().serializeNBT()), serverPlayer);
                 }
                 pPlayer.sendSystemMessage(pwrInv.getInventory().getStackInSlot(0).getDisplayName());
-
-
 
             });
         }
