@@ -6,7 +6,7 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.pzpeen.ben10mod.Ben10Mod;
-import net.pzpeen.ben10mod.items.custom.OmntrixItem;
+import net.pzpeen.ben10mod.items.custom.omnitrix.OmntrixItem;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS =

@@ -11,24 +11,24 @@ import net.minecraftforge.common.util.LazyOptional;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class PowerInventoryProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
-    public static Capability<PowerInventory> PLAYER_POWER_INVENTORY =
+public class PowerCapProvider implements ICapabilityProvider, INBTSerializable<CompoundTag> {
+    public static Capability<PowerCap> PLAYER_POWER_CAP =
             CapabilityManager.get(new CapabilityToken<>() {});
 
-    private PowerInventory powerInventoryHolder = null;
-    private final LazyOptional<PowerInventory> opt = LazyOptional.of(this::createOrGetPowerInventory);
+    private PowerCap powerCapHolder = null;
+    private final LazyOptional<PowerCap> opt = LazyOptional.of(this::createOrGetPowerCap);
 
 
-    private PowerInventory createOrGetPowerInventory(){
-        if(powerInventoryHolder == null){
-            powerInventoryHolder = new PowerInventory();
+    private PowerCap createOrGetPowerCap(){
+        if(powerCapHolder == null){
+            powerCapHolder = new PowerCap();
         }
-        return powerInventoryHolder;
+        return powerCapHolder;
     }
 
     @Override
     public @NotNull <T> LazyOptional<T> getCapability(@NotNull Capability<T> cap, @Nullable Direction side) {
-        if(cap == PLAYER_POWER_INVENTORY){
+        if(cap == PLAYER_POWER_CAP){
             return opt.cast();
         }
         return LazyOptional.empty();
@@ -37,12 +37,12 @@ public class PowerInventoryProvider implements ICapabilityProvider, INBTSerializ
     @Override
     public CompoundTag serializeNBT() {
         CompoundTag nbt = new CompoundTag();
-        createOrGetPowerInventory().saveNBT(nbt);
+        createOrGetPowerCap().saveNBT(nbt);
         return nbt;
     }
 
     @Override
     public void deserializeNBT(CompoundTag nbt) {
-        createOrGetPowerInventory().loadNBT(nbt);
+        createOrGetPowerCap().loadNBT(nbt);
     }
 }

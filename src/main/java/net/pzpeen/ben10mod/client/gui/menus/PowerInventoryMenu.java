@@ -1,6 +1,7 @@
-package net.pzpeen.ben10mod.gui.menus;
+package net.pzpeen.ben10mod.client.gui.menus;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -8,8 +9,11 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
-import net.pzpeen.ben10mod.gui.ModMenus;
-import net.pzpeen.ben10mod.items.ModItems;
+import net.pzpeen.ben10mod.capabilities.power_inventory.PowerCapProvider;
+import net.pzpeen.ben10mod.client.gui.ModMenus;
+import net.pzpeen.ben10mod.networking.ModNetworking;
+import net.pzpeen.ben10mod.networking.packets.PowerCapS2CPacket;
+import net.pzpeen.ben10mod.utils.ModTags;
 import org.jetbrains.annotations.NotNull;
 
 public class PowerInventoryMenu extends AbstractContainerMenu {
@@ -28,7 +32,23 @@ public class PowerInventoryMenu extends AbstractContainerMenu {
         this.addSlot(new SlotItemHandler(this.pwrSlot, 0, 80, 18){
             @Override
             public boolean mayPlace(@NotNull ItemStack stack) {
-                return stack.is(ModItems.OMNITRIX.get());
+                return stack.is(ModTags.Items.POWER_ITEMS);
+            }
+
+            @Override
+            public void setChanged() {
+                super.setChanged();
+
+                if(!player.level().isClientSide()){
+                    player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent((pwrCap) -> {
+                        pwrCap.setHudActive(false);
+                        ModNetworking.sendToClientTrackingAndSelf(
+                                new PowerCapS2CPacket(pwrCap.getInventory().serializeNBT(), player.getUUID(),
+                                        pwrCap.isHudActive(), pwrCap.getHudSlot()), (ServerPlayer) player);
+                    });
+
+                }
+
             }
         });
         addPlayerInventory(this.player.getInventory());
@@ -64,7 +84,7 @@ public class PowerInventoryMenu extends AbstractContainerMenu {
                     return ItemStack.EMPTY;
                 }
             }else {
-                if(originalItemStack.is(ModItems.OMNITRIX.get())){
+                if(originalItemStack.is(ModTags.Items.POWER_ITEMS)){
                     if(!this.moveItemStackTo(originalItemStack, 0, 1, false)){
                         return ItemStack.EMPTY;
                     }
@@ -95,4 +115,5 @@ public class PowerInventoryMenu extends AbstractContainerMenu {
     public boolean stillValid(Player pPlayer) {
         return true;
     }
+
 }

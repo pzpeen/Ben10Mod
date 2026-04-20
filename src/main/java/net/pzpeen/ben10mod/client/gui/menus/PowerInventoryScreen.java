@@ -1,4 +1,4 @@
-package net.pzpeen.ben10mod.gui.menus;
+package net.pzpeen.ben10mod.client.gui.menus;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
