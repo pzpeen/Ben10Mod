@@ -6,14 +6,14 @@ import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.ForgeRegistries;
 import net.minecraftforge.registries.RegistryObject;
 import net.pzpeen.ben10mod.Ben10Mod;
-import net.pzpeen.ben10mod.items.custom.omnitrix.OmntrixItem;
+import net.pzpeen.ben10mod.items.custom.omnitrix.OmnitrixItem;
 
 public class ModItems {
     public static final DeferredRegister<Item> ITEMS =
             DeferredRegister.create(ForgeRegistries.ITEMS, Ben10Mod.MOD_ID);
 
     public static final RegistryObject<Item> OMNITRIX = ITEMS.register("omnitrix", () ->
-            new OmntrixItem(new Item.Properties().stacksTo(1)));
+            new OmnitrixItem(new Item.Properties().stacksTo(1)));
 
 
 

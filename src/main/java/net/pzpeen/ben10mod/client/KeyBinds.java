@@ -13,6 +13,7 @@ import net.pzpeen.ben10mod.items.ModItems;
 import net.pzpeen.ben10mod.networking.ModNetworking;
 import net.pzpeen.ben10mod.networking.packets.OpenPowerMenuC2SPacket;
 import net.pzpeen.ben10mod.networking.packets.PowerCapC2SPacket;
+import net.pzpeen.ben10mod.utils.ModTags;
 import org.lwjgl.glfw.GLFW;
 
 public class KeyBinds {
@@ -32,6 +33,9 @@ public class KeyBinds {
         event.register(ACTIVATE_POWER);
     }
 
+    private static long cooldownToActivatePower = 1000;
+    private static long lastClickActivatePower = 0;
+
     public static void registerFunctions(InputEvent.Key event){
         //Power Menu
         if(KeyBinds.POWER_MENU.consumeClick()){
@@ -43,13 +47,12 @@ public class KeyBinds {
             AbstractClientPlayer player = Minecraft.getInstance().player;
             assert player != null;
             //player.sendSystemMessage(Component.literal("Activate power"));
-            if(event.getAction() == GLFW.GLFW_PRESS){
+            if(event.getAction() == GLFW.GLFW_PRESS && System.currentTimeMillis() - lastClickActivatePower >= cooldownToActivatePower){
+                lastClickActivatePower = System.currentTimeMillis();
                 player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(pwrCap -> {
-                    if (pwrCap.getInventory().getStackInSlot(0).is(ModItems.OMNITRIX.get())){
-                        pwrCap.setHudActive(!pwrCap.isHudActive());
 
-                        ModNetworking.sendToServer(new PowerCapC2SPacket(pwrCap.isHudActive(), pwrCap.getHudSlot()));
-                    }
+                        ModNetworking.sendToServer(new PowerCapC2SPacket(!pwrCap.isHudActive(), pwrCap.getHudSlot()));
+
 
                 });
             }

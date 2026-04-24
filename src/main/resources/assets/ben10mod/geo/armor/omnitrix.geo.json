@@ -4,8 +4,8 @@
 		{
 			"description": {
 				"identifier": "geometry.default_player",
-				"texture_width": 32,
-				"texture_height": 32,
+				"texture_width": 64,
+				"texture_height": 86,
 				"visible_bounds_width": 5,
 				"visible_bounds_height": 5,
 				"visible_bounds_offset": [0, 1.5, 0]
@@ -151,22 +151,186 @@
 					]
 				},
 				{
-					"name": "dial",
+					"name": "core",
 					"parent": "armorLeftArm",
-					"pivot": [7.1, -2.18, -7.9],
+					"pivot": [4.6675, -2.1125, -7.9],
 					"cubes": [
 						{
 							"origin": [4.38, -3.1, -8.9],
 							"size": [1.4, 2, 2],
 							"uv": {
 								"north": {"uv": [3, 4], "uv_size": [-1, -2]},
-								"east": {"uv": [32, 32], "uv_size": [-10.5, -10.75]},
+								"east": {"uv": [33.25, 10.75], "uv_size": [-10.5, -10.75], "uv_rotation": 90},
 								"south": {"uv": [6, 4], "uv_size": [-1, -2]},
 								"west": {"uv": [2, 4], "uv_size": [-2, -2]},
 								"up": {"uv": [3, 2], "uv_size": [1, -2], "uv_rotation": 180},
 								"down": {"uv": [2, 0], "uv_size": [1, 2], "uv_rotation": 180}
 							}
-						},
+						}
+					]
+				},
+				{
+					"name": "selectionAnim",
+					"parent": "core",
+					"pivot": [4.7925, -2.1125, -7.9]
+				},
+				{
+					"name": "frame1",
+					"parent": "selectionAnim",
+					"pivot": [4.505, -2.1, -7.9],
+					"cubes": [
+						{
+							"origin": [4.35, -3.2, -8.9],
+							"size": [0.15, 2.1, 2],
+							"uv": {
+								"north": {"uv": [3, 58.625], "uv_size": [-1, -2]},
+								"east": {"uv": [33.125, 21.5], "uv_size": [-10.5, -10.75], "uv_rotation": 90},
+								"south": {"uv": [6, 58.625], "uv_size": [-1, -2]},
+								"west": {"uv": [2, 58.625], "uv_size": [-2, -2]},
+								"up": {"uv": [3, 56.625], "uv_size": [1, -2], "uv_rotation": 180},
+								"down": {"uv": [2, 54.625], "uv_size": [1, 2], "uv_rotation": 180}
+							}
+						}
+					]
+				},
+				{
+					"name": "frame2",
+					"parent": "selectionAnim",
+					"pivot": [4.505, -2.1, -7.9],
+					"cubes": [
+						{
+							"origin": [4.349, -3.2, -8.9],
+							"size": [0.15, 2.1, 2],
+							"uv": {
+								"north": {"uv": [3, 68.25], "uv_size": [-1, -2]},
+								"east": {"uv": [33.25, 32.25], "uv_size": [-10.5, -10.75], "uv_rotation": 90},
+								"south": {"uv": [6, 68.25], "uv_size": [-1, -2]},
+								"west": {"uv": [2, 68.25], "uv_size": [-2, -2]},
+								"up": {"uv": [3, 66.25], "uv_size": [1, -2], "uv_rotation": 180},
+								"down": {"uv": [2, 64.25], "uv_size": [1, 2], "uv_rotation": 180}
+							}
+						}
+					]
+				},
+				{
+					"name": "frame3",
+					"parent": "selectionAnim",
+					"pivot": [4.505, -2.1, -7.9],
+					"cubes": [
+						{
+							"origin": [4.348, -3.2, -8.9],
+							"size": [0.15, 2.1, 2],
+							"uv": {
+								"north": {"uv": [3, 75.375], "uv_size": [-1, -2]},
+								"east": {"uv": [33.25, 43], "uv_size": [-10.5, -10.75], "uv_rotation": 90},
+								"south": {"uv": [6, 75.375], "uv_size": [-1, -2]},
+								"west": {"uv": [2, 75.375], "uv_size": [-2, -2]},
+								"up": {"uv": [3, 73.375], "uv_size": [1, -2], "uv_rotation": 180},
+								"down": {"uv": [2, 71.375], "uv_size": [1, 2], "uv_rotation": 180}
+							}
+						}
+					]
+				},
+				{
+					"name": "frame4",
+					"parent": "selectionAnim",
+					"pivot": [4.505, -2.1, -7.9],
+					"cubes": [
+						{
+							"origin": [4.347, -3.2, -8.9],
+							"size": [0.15, 2.1, 2],
+							"uv": {
+								"north": {"uv": [3, 60.625], "uv_size": [-1, -2]},
+								"east": {"uv": [33.25, 53.75], "uv_size": [-10.5, -10.75], "uv_rotation": 90},
+								"south": {"uv": [6, 60.625], "uv_size": [-1, -2]},
+								"west": {"uv": [2, 60.625], "uv_size": [-2, -2]},
+								"up": {"uv": [3, 58.625], "uv_size": [1, -2], "uv_rotation": 180},
+								"down": {"uv": [2, 56.625], "uv_size": [1, 2], "uv_rotation": 180}
+							}
+						}
+					]
+				},
+				{
+					"name": "frame5",
+					"parent": "selectionAnim",
+					"pivot": [4.505, -2.1, -7.9],
+					"cubes": [
+						{
+							"origin": [4.346, -3.2, -8.9],
+							"size": [0.15, 2.1, 2],
+							"uv": {
+								"north": {"uv": [3, 65.75], "uv_size": [-1, -2]},
+								"east": {"uv": [33.2375, 64.4875], "uv_size": [-10.5, -10.75], "uv_rotation": 90},
+								"south": {"uv": [6, 65.75], "uv_size": [-1, -2]},
+								"west": {"uv": [2, 65.75], "uv_size": [-2, -2]},
+								"up": {"uv": [3, 63.75], "uv_size": [1, -2], "uv_rotation": 180},
+								"down": {"uv": [2, 61.75], "uv_size": [1, 2], "uv_rotation": 180}
+							}
+						}
+					]
+				},
+				{
+					"name": "frame6",
+					"parent": "selectionAnim",
+					"pivot": [4.505, -2.1, -7.9],
+					"cubes": [
+						{
+							"origin": [4.345, -3.2, -8.9],
+							"size": [0.15, 2.1, 2],
+							"uv": {
+								"north": {"uv": [3, 52.25], "uv_size": [-1, -2]},
+								"east": {"uv": [33.2375, 75.2375], "uv_size": [-10.5, -10.75], "uv_rotation": 90},
+								"south": {"uv": [6, 52.25], "uv_size": [-1, -2]},
+								"west": {"uv": [2, 52.25], "uv_size": [-2, -2]},
+								"up": {"uv": [3, 50.25], "uv_size": [1, -2], "uv_rotation": 180},
+								"down": {"uv": [2, 48.25], "uv_size": [1, 2], "uv_rotation": 180}
+							}
+						}
+					]
+				},
+				{
+					"name": "frame7",
+					"parent": "selectionAnim",
+					"pivot": [4.505, -2.1, -7.9],
+					"cubes": [
+						{
+							"origin": [4.344, -3.2, -8.9],
+							"size": [0.15, 2.1, 2],
+							"uv": {
+								"north": {"uv": [3, 45.25], "uv_size": [-1, -2]},
+								"east": {"uv": [33.2375, 86], "uv_size": [-10.5, -10.75], "uv_rotation": 90},
+								"south": {"uv": [6, 45.25], "uv_size": [-1, -2]},
+								"west": {"uv": [2, 45.25], "uv_size": [-2, -2]},
+								"up": {"uv": [3, 43.25], "uv_size": [1, -2], "uv_rotation": 180},
+								"down": {"uv": [2, 41.25], "uv_size": [1, 2], "uv_rotation": 180}
+							}
+						}
+					]
+				},
+				{
+					"name": "alien_icon",
+					"parent": "selectionAnim",
+					"pivot": [4.505, -2.1, -7.9],
+					"cubes": [
+						{
+							"origin": [4.343, -3.2, -8.9],
+							"size": [0.15, 2.1, 2],
+							"uv": {
+								"north": {"uv": [3, 4], "uv_size": [-1, -2]},
+								"east": {"uv": [43.7375, 10.75], "uv_size": [-10.5, -10.75], "uv_rotation": 90},
+								"south": {"uv": [6, 4], "uv_size": [-1, -2]},
+								"west": {"uv": [2, 4], "uv_size": [-2, -2]},
+								"up": {"uv": [3, 2], "uv_size": [1, -2], "uv_rotation": 180},
+								"down": {"uv": [2, 0], "uv_size": [1, 2], "uv_rotation": 180}
+							}
+						}
+					]
+				},
+				{
+					"name": "dial",
+					"parent": "core",
+					"pivot": [4.255, -2.125, -7.9],
+					"cubes": [
 						{
 							"origin": [4.18, -3.4, -8.95],
 							"size": [0.3, 0.3, 2.1],

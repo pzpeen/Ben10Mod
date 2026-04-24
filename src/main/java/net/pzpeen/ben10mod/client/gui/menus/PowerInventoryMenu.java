@@ -1,6 +1,7 @@
 package net.pzpeen.ben10mod.client.gui.menus;
 
 import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -11,10 +12,12 @@ import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 import net.pzpeen.ben10mod.capabilities.power_inventory.PowerCapProvider;
 import net.pzpeen.ben10mod.client.gui.ModMenus;
+import net.pzpeen.ben10mod.client.gui.hud.OmnitrixHud;
 import net.pzpeen.ben10mod.networking.ModNetworking;
 import net.pzpeen.ben10mod.networking.packets.PowerCapS2CPacket;
 import net.pzpeen.ben10mod.utils.ModTags;
 import org.jetbrains.annotations.NotNull;
+import software.bernie.geckolib.animatable.GeoItem;
 
 public class PowerInventoryMenu extends AbstractContainerMenu {
     private final Player player;
@@ -40,11 +43,21 @@ public class PowerInventoryMenu extends AbstractContainerMenu {
                 super.setChanged();
 
                 if(!player.level().isClientSide()){
+                    //Changing menu state and hud arms animation progress
                     player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent((pwrCap) -> {
                         pwrCap.setHudActive(false);
+                        OmnitrixHud.menuAnimProgress = 0.0f;
+                        OmnitrixHud.lastMenuAnimProgress = 0.0f;
                         ModNetworking.sendToClientTrackingAndSelf(
                                 new PowerCapS2CPacket(pwrCap.getInventory().serializeNBT(), player.getUUID(),
                                         pwrCap.isHudActive(), pwrCap.getHudSlot()), (ServerPlayer) player);
+
+
+                        if(!pwrCap.getInventory().getStackInSlot(0).isEmpty()){
+                            System.out.println("Colocando uuid na item stack");
+                            pwrCap.getInventory().getStackInSlot(0).getOrCreateTag().putUUID("playerUsingUUID", player.getUUID());
+                            GeoItem.getOrAssignId(pwrCap.getInventory().getStackInSlot(0), (ServerLevel) player.level());
+                        }
                     });
 
                 }

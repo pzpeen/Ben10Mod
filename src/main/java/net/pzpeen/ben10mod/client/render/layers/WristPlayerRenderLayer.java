@@ -12,7 +12,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.pzpeen.ben10mod.capabilities.power_inventory.PowerCapProvider;
-import net.pzpeen.ben10mod.items.custom.omnitrix.OmntrixItem;
+import net.pzpeen.ben10mod.items.custom.omnitrix.OmnitrixItem;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 public class WristPlayerRenderLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
@@ -25,8 +25,9 @@ public class WristPlayerRenderLayer extends RenderLayer<AbstractClientPlayer, Pl
     public void render(PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, AbstractClientPlayer pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTick, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
 
         pLivingEntity.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent((pwrCap) -> {
+            System.out.println("Cliente, menu aberto: " + pwrCap.isHudActive());
 
-            if(pwrCap.getInventory().getStackInSlot(0).getItem() instanceof OmntrixItem){
+            if(pwrCap.getInventory().getStackInSlot(0).getItem() instanceof OmnitrixItem){
                 ItemStack stack = pwrCap.getInventory().getStackInSlot(0);
 
                 pPoseStack.pushPose();
@@ -45,6 +46,7 @@ public class WristPlayerRenderLayer extends RenderLayer<AbstractClientPlayer, Pl
                             OverlayTexture.NO_OVERLAY
                             );
                 }
+
 
                 pPoseStack.popPose();
 

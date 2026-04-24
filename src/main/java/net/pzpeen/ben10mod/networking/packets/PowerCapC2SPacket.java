@@ -4,6 +4,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 import net.pzpeen.ben10mod.capabilities.power_inventory.PowerCapProvider;
+import net.pzpeen.ben10mod.networking.ModNetworking;
 
 import java.util.function.Supplier;
 
@@ -33,6 +34,8 @@ public class PowerCapC2SPacket {
                 player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(pwrCap -> {
                     pwrCap.setHudActive(this.hudActive);
                     pwrCap.setHudSlot(this.hudSlot);
+
+                    ModNetworking.sendToClientTrackingAndSelf(new PowerCapS2CPacket(pwrCap.getInventory().serializeNBT(), player.getUUID(), pwrCap.isHudActive(), pwrCap.getHudSlot()), player);
                 });
             }
 
