@@ -48,16 +48,16 @@ public class PowerInventoryMenu extends AbstractContainerMenu {
                         pwrCap.setHudActive(false);
                         OmnitrixHud.menuAnimProgress = 0.0f;
                         OmnitrixHud.lastMenuAnimProgress = 0.0f;
-                        ModNetworking.sendToClientTrackingAndSelf(
-                                new PowerCapS2CPacket(pwrCap.getInventory().serializeNBT(), player.getUUID(),
-                                        pwrCap.isHudActive(), pwrCap.getHudSlot()), (ServerPlayer) player);
-
-
                         if(!pwrCap.getInventory().getStackInSlot(0).isEmpty()){
                             System.out.println("Colocando uuid na item stack");
                             pwrCap.getInventory().getStackInSlot(0).getOrCreateTag().putUUID("playerUsingUUID", player.getUUID());
                             GeoItem.getOrAssignId(pwrCap.getInventory().getStackInSlot(0), (ServerLevel) player.level());
                         }
+
+                        ModNetworking.sendToClientTrackingAndSelf(
+                                new PowerCapS2CPacket(pwrCap.getInventory().serializeNBT(), player.getUUID(),
+                                        pwrCap.isHudActive(), pwrCap.getHudSlot()), (ServerPlayer) player);
+
                     });
 
                 }

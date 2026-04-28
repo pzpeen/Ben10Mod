@@ -50,10 +50,9 @@ public class KeyBinds {
             if(event.getAction() == GLFW.GLFW_PRESS && System.currentTimeMillis() - lastClickActivatePower >= cooldownToActivatePower){
                 lastClickActivatePower = System.currentTimeMillis();
                 player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(pwrCap -> {
-
-                        ModNetworking.sendToServer(new PowerCapC2SPacket(!pwrCap.isHudActive(), pwrCap.getHudSlot()));
-
-
+                        if (pwrCap.getInventory().getStackInSlot(0).is(ModTags.Items.POWER_ITEMS)){
+                            ModNetworking.sendToServer(new PowerCapC2SPacket(!pwrCap.isHudActive(), pwrCap.getHudSlot()));
+                        }
                 });
             }
 
