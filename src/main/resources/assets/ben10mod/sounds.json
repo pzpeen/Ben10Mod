@@ -1,0 +1,32 @@
+{
+  "omnitrix_activate": {
+    "subtitles": "sounds.ben10mod.omnitrix_activate",
+    "sounds": ["ben10mod:omnitrix/omnitrix_activate"]
+  },
+  "omnitrix_deactivate": {
+    "subtitles": "sounds.ben10mod.omnitrix_deactivate",
+    "sounds": ["ben10mod:omnitrix/omnitrix_deactivate"]
+  },
+  "omnitrix_dial": {
+    "subtitles": "sounds.ben10mod.omnitrix_dial",
+    "sounds": [
+      "ben10mod:omnitrix/omnitrix_dial_1",
+      "ben10mod:omnitrix/omnitrix_dial_2",
+      "ben10mod:omnitrix/omnitrix_dial_3",
+      "ben10mod:omnitrix/omnitrix_dial_4",
+      "ben10mod:omnitrix/omnitrix_dial_5"
+    ]
+  },
+  "omnitrix_active": {
+    "subtitles": "sounds.ben10mod.omnitrix_active",
+    "sounds": [
+      "ben10mod:omnitrix/omnitrix_active"
+    ]
+  },
+  "omnitrix_putting": {
+    "subtitles": "sounds.ben10mod.omnitrix_putting",
+    "sounds": [
+      "ben10mod:omnitrix/omnitrix_putting"
+    ]
+  }
+}

@@ -49,7 +49,7 @@ public class PowerInventoryMenu extends AbstractContainerMenu {
                         OmnitrixHud.menuAnimProgress = 0.0f;
                         OmnitrixHud.lastMenuAnimProgress = 0.0f;
                         if(!pwrCap.getInventory().getStackInSlot(0).isEmpty()){
-                            System.out.println("Colocando uuid na item stack");
+                            //System.out.println("Colocando uuid na item stack");
                             pwrCap.getInventory().getStackInSlot(0).getOrCreateTag().putUUID("playerUsingUUID", player.getUUID());
                             GeoItem.getOrAssignId(pwrCap.getInventory().getStackInSlot(0), (ServerLevel) player.level());
                         }

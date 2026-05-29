@@ -7,6 +7,13 @@
 
   "key.categories.ben10mod.ben10": "Ben 10",
   "key.keybinds.ben10mod.power_menu": "Power Menu",
-  "key.keybinds.ben10mod.activate_power": "Activate Power"
+  "key.keybinds.ben10mod.activate_power": "Activate Power",
+
+
+  "sounds.ben10mod.omnitrix_activate": "Omnitrix Activation Sound",
+  "sounds.ben10mod.omnitrix_deactivate": "Omnitrix Deactivation Sound",
+  "sounds.ben10mod.omnitrix_dial": "Omnitrix Dial Sound",
+  "sounds.ben10mod.omnitrix_active": "Omnitrix active beep Sound",
+  "sounds.ben10mod.omnitrix_putting": "Putting Omnitrix Sound"
 
 }

@@ -5,6 +5,7 @@ import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
@@ -19,6 +20,7 @@ import net.pzpeen.ben10mod.client.render.power_items.omnitrix.OmnitrixModel;
 import net.pzpeen.ben10mod.client.render.power_items.omnitrix.OmnitrixRenderer;
 import net.pzpeen.ben10mod.networking.ModNetworking;
 import net.pzpeen.ben10mod.networking.packets.PowerCapS2CPacket;
+import net.pzpeen.ben10mod.sounds.ModSounds;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.animatable.GeoItem;
@@ -54,7 +56,8 @@ public class OmnitrixItem extends Item implements GeoItem {
                     pwrCap.getInventory().setStackInSlot(0, itemStack.copyAndClear());
                     pwrCap.getInventory().getStackInSlot(0).getOrCreateTag().putUUID("playerUsingUUID", pPlayer.getUUID());
                     GeoItem.getOrAssignId(pwrCap.getInventory().getStackInSlot(0), (ServerLevel) pPlayer.level());
-
+                    pLevel.playSound(null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), ModSounds.OMNITRIX_PUTTING.get(),
+                            SoundSource.PLAYERS, 0.5f, 1.0f);
                     ModNetworking.sendToClientTrackingAndSelf(new PowerCapS2CPacket(pwrCap.getInventory().serializeNBT(), pPlayer.getUUID(),
                             pwrCap.isHudActive(), pwrCap.getHudSlot()), serverPlayer);
 
