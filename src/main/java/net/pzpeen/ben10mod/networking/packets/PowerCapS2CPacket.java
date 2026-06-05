@@ -7,7 +7,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
-import net.pzpeen.ben10mod.capabilities.power_inventory.PowerCapProvider;
+import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
 
 import java.util.UUID;
 import java.util.function.Supplier;

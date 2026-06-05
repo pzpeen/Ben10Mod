@@ -6,7 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkHooks;
-import net.pzpeen.ben10mod.capabilities.power_inventory.PowerCapProvider;
+import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
 import net.pzpeen.ben10mod.client.gui.menus.PowerInventoryMenu;
 
 import java.util.function.Supplier;

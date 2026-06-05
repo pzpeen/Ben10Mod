@@ -6,12 +6,9 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.pzpeen.ben10mod.capabilities.power_inventory.PowerCapProvider;
-import net.pzpeen.ben10mod.items.ModItems;
+import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
 import net.pzpeen.ben10mod.networking.ModNetworking;
-import net.pzpeen.ben10mod.sounds.ModSounds;
 
-import javax.annotation.Nullable;
 import java.util.function.Supplier;
 
 public class PowerCapC2SPacket {

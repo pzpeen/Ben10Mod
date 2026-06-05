@@ -1,4 +1,4 @@
-package net.pzpeen.ben10mod.capabilities.power_inventory;
+package net.pzpeen.ben10mod.capabilities.power_capability;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraftforge.common.capabilities.AutoRegisterCapability;

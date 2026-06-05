@@ -10,10 +10,11 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.pzpeen.ben10mod.Ben10Mod;
-import net.pzpeen.ben10mod.capabilities.power_inventory.PowerCapProvider;
+import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
 import net.pzpeen.ben10mod.client.gui.hud.OmnitrixHud;
 import net.pzpeen.ben10mod.client.render.layers.WristPlayerRenderLayer;
 import net.pzpeen.ben10mod.items.ModItems;
+import net.pzpeen.ben10mod.races.pyronite.PyroniteRace;
 import net.pzpeen.ben10mod.utils.ModTags;
 
 
@@ -84,6 +85,15 @@ public class ClientEvents {
                 }
 
             });
+
+        }
+
+        private static PyroniteRace p = new PyroniteRace();
+        @SubscribeEvent
+        public static void onRenderPlayer(RenderPlayerEvent.Pre event){
+            Player player = event.getEntity();
+            event.cancel();
+            p.render(event.getPoseStack(), player, event.getMultiBufferSource(), event.getPackedLight(), event.getPartialTick());
 
         }
 
