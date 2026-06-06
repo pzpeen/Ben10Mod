@@ -7,9 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.pzpeen.ben10mod.Ben10Mod;
-import net.pzpeen.ben10mod.networking.packets.OpenPowerMenuC2SPacket;
-import net.pzpeen.ben10mod.networking.packets.PowerCapC2SPacket;
-import net.pzpeen.ben10mod.networking.packets.PowerCapS2CPacket;
+import net.pzpeen.ben10mod.networking.packets.*;
 
 public class ModNetworking {
     private static SimpleChannel INSTANCE;
@@ -46,6 +44,18 @@ public class ModNetworking {
                 .encoder(PowerCapC2SPacket::encode)
                 .decoder(PowerCapC2SPacket::decode)
                 .consumerMainThread(PowerCapC2SPacket::handle)
+                .add();
+
+        INSTANCE.messageBuilder(RaceCapS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(RaceCapS2CPacket::encode)
+                .decoder(RaceCapS2CPacket::decode)
+                .consumerMainThread(RaceCapS2CPacket::handle)
+                .add();
+
+        INSTANCE.messageBuilder(RaceCapC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .encoder(RaceCapC2SPacket::encode)
+                .decoder(RaceCapC2SPacket::decode)
+                .consumerMainThread(RaceCapC2SPacket::handle)
                 .add();
     }
 

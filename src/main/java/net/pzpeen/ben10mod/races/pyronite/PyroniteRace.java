@@ -2,9 +2,11 @@ package net.pzpeen.ben10mod.races.pyronite;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.pzpeen.ben10mod.Ben10Mod;
 import net.pzpeen.ben10mod.races.AbstractRace;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
@@ -16,12 +18,25 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class PyroniteRace extends AbstractRace {
+    public static final ResourceLocation id = ResourceLocation.fromNamespaceAndPath(Ben10Mod.MOD_ID, "pyronite");
+    private static final ResourceLocation icon = ResourceLocation.fromNamespaceAndPath(Ben10Mod.MOD_ID, "textures/races/"+id.getPath()+"/icon.png");
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private boolean isOnWater;
     private static final PyroniteRenderer RENDERER = new PyroniteRenderer();
 
     public PyroniteRace() {
-        super("pyronite");
+        super();
+    }
+
+
+    @Override
+    public ResourceLocation getID() {
+        return id;
+    }
+
+    @Override
+    public ResourceLocation getIcon() {
+        return icon;
     }
 
     public boolean isOnWater(){

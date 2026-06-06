@@ -12,6 +12,7 @@ import net.pzpeen.ben10mod.client.gui.menus.PowerInventoryScreen;
 import net.pzpeen.ben10mod.items.ModCreativeTabs;
 import net.pzpeen.ben10mod.items.ModItems;
 import net.pzpeen.ben10mod.networking.ModNetworking;
+import net.pzpeen.ben10mod.races.RacesRegistries;
 import net.pzpeen.ben10mod.sounds.ModSounds;
 import org.slf4j.Logger;
 import software.bernie.geckolib.GeckoLib;
@@ -33,6 +34,7 @@ public class Ben10Mod
 
         ModMenus.register(modEventBus);
         ModCreativeTabs.register(modEventBus);
+        RacesRegistries.register();
         ModItems.register(modEventBus);
         ModSounds.register(modEventBus);
 

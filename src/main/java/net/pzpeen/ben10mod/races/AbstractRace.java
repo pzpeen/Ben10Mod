@@ -8,21 +8,13 @@ import net.pzpeen.ben10mod.Ben10Mod;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 
 public abstract class AbstractRace implements GeoAnimatable {
-    protected final String alienID;
-    protected final ResourceLocation icon;
 
-    public AbstractRace(String alienID){
-        this.alienID = alienID;
-        this.icon = ResourceLocation.fromNamespaceAndPath(Ben10Mod.MOD_ID, "textures/races/"+alienID+"/icon.png");
-    }
+    public AbstractRace(){}
 
-    public String getAlienID() {
-        return alienID;
-    }
+    public abstract ResourceLocation getID();
 
-    public ResourceLocation getIcon() {
-        return icon;
-    }
+    public abstract ResourceLocation getIcon();
 
     public abstract void render(PoseStack poseStack, Player player, MultiBufferSource bufferSource, int packedLight, float partialTick);
+
 }
