@@ -1,6 +1,7 @@
 package net.pzpeen.ben10mod.races;
 
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.pzpeen.ben10mod.Ben10Mod;
 import net.pzpeen.ben10mod.races.pyronite.PyroniteRace;
 
@@ -20,11 +21,13 @@ public class RacesRegistries {
         ALIEN_REGISTRIES.put(id, s);
     }
 
-    public static AbstractRace pickRace(ResourceLocation id){
+    public static AbstractRace pickRace(ResourceLocation id, Player player){
         if(id == null || id.toString().equals(humanRaceID.toString())) return null; //Id null means that is human!
         Supplier<? extends AbstractRace> s = ALIEN_REGISTRIES.get(id);
         if(s != null){
-            return s.get();
+            AbstractRace race = s.get();
+            race.setPlayer(player);
+            return race;
         }
         System.err.println("ERROR: TRYING TO PICK A INEXISTENT RACE " + id.toString());
         return null;

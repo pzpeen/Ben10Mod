@@ -23,7 +23,7 @@ public class ModEvents {
 
         @SubscribeEvent
         public static void onAttachCapabilitiesEvent(AttachCapabilitiesEvent<Entity> event){
-            if(event.getObject() instanceof Player){
+            if(event.getObject() instanceof Player player){
                 //Attaching power cap
                 if(!event.getObject().getCapability(PowerCapProvider.PLAYER_POWER_CAP).isPresent()){
                     event.addCapability(ResourceLocation.fromNamespaceAndPath(Ben10Mod.MOD_ID, "ben10mod_power_cap"), new PowerCapProvider());
@@ -31,7 +31,7 @@ public class ModEvents {
 
                 //Attaching race cap
                 if(!event.getObject().getCapability(RaceCapProvider.PLAYER_RACE_CAP).isPresent()){
-                    event.addCapability(ResourceLocation.fromNamespaceAndPath(Ben10Mod.MOD_ID, "ben10mod_race_cap"), new RaceCapProvider());
+                    event.addCapability(ResourceLocation.fromNamespaceAndPath(Ben10Mod.MOD_ID, "ben10mod_race_cap"), new RaceCapProvider(player));
                 }
             }
         }
@@ -49,7 +49,7 @@ public class ModEvents {
             //Keeping RaceCap on server
             event.getOriginal().getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(oldCap ->
                     event.getEntity().getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(newCap ->
-                            newCap.setRace(oldCap.getRaceId())));
+                            newCap.setRace(oldCap.getRaceId(), event.getEntity())));
         }
 
         @SubscribeEvent

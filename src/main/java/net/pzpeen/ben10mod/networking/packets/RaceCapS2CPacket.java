@@ -40,7 +40,7 @@ public class RaceCapS2CPacket {
 
                 if(player != null){
                     player.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
-                        raceCap.setRace(this.alienID);
+                        raceCap.setRace(this.alienID, player);
                     });
                 }
 

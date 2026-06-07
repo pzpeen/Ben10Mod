@@ -43,7 +43,7 @@ public class RaceSet {
             //ResourceLocation raceID = new ResourceLocation(StringArgumentType.getString(commandContext, "raceId"));
 
             targetPlayer.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
-                raceCap.setRace(raceID);
+                raceCap.setRace(raceID, targetPlayer);
             });
 
             ModNetworking.sendToClientTrackingAndSelf(new RaceCapS2CPacket(raceID, targetPlayer.getUUID()), commandContext.getSource().getPlayer());

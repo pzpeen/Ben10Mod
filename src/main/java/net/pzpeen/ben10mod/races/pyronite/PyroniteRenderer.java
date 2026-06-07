@@ -146,7 +146,7 @@ public class PyroniteRenderer implements GeoRenderer<PyroniteRace> {
     }
 
     public void renderAlien(PyroniteRace animatable, Player player, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float partialTick){
-        System.out.println("TENTANDO RENDERIZAR CHAMA");
+        //System.out.println("TENTANDO RENDERIZAR CHAMA");
         //Dizendo o quem é o animatable (o pyronite race) e o player
         this.currentAnimatable = animatable;
         this.currentPlayer = player;

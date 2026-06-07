@@ -2,6 +2,7 @@ package net.pzpeen.ben10mod.capabilities.race_capability;
 
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.CapabilityManager;
 import net.minecraftforge.common.capabilities.CapabilityToken;
@@ -18,9 +19,15 @@ public class RaceCapProvider implements ICapabilityProvider, INBTSerializable<Co
     private RaceCap raceCapHolder = null;
     private final LazyOptional<RaceCap> opt = LazyOptional.of(this::createOrGetRaceCap);
 
+    private final Player player;
+
+    public RaceCapProvider(Player player) {
+        this.player = player;
+    }
+
     private RaceCap createOrGetRaceCap(){
         if(raceCapHolder == null){
-            raceCapHolder = new RaceCap();
+            raceCapHolder = new RaceCap(this.player);
         }
         return raceCapHolder;
     }

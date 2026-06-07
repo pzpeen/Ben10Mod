@@ -8,6 +8,8 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.pzpeen.ben10mod.Ben10Mod;
 import net.pzpeen.ben10mod.races.AbstractRace;
+import net.pzpeen.ben10mod.races.AlienArmModel;
+import net.pzpeen.ben10mod.races.AlienArmRenderer;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -15,6 +17,7 @@ import software.bernie.geckolib.core.animation.AnimatableManager;
 import software.bernie.geckolib.core.animation.AnimationController;
 import software.bernie.geckolib.core.animation.RawAnimation;
 import software.bernie.geckolib.core.object.PlayState;
+import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
 public class PyroniteRace extends AbstractRace {
@@ -23,6 +26,7 @@ public class PyroniteRace extends AbstractRace {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private boolean isOnWater;
     private static final PyroniteRenderer RENDERER = new PyroniteRenderer();
+    private static final AlienArmRenderer ARM_RENDERER = new AlienArmRenderer(id);
 
     public PyroniteRace() {
         super();
@@ -37,6 +41,17 @@ public class PyroniteRace extends AbstractRace {
     @Override
     public ResourceLocation getIcon() {
         return icon;
+    }
+
+    @Override
+    public AlienArmRenderer getAlienArmRenderer() {
+        return ARM_RENDERER;
+    }
+
+
+    @Override
+    public GeoRenderer<? extends AbstractRace> getRenderer() {
+        return RENDERER;
     }
 
     public boolean isOnWater(){
@@ -55,6 +70,10 @@ public class PyroniteRace extends AbstractRace {
     @Override
     public void registerControllers(AnimatableManager.ControllerRegistrar controllers) {
         controllers.add(new AnimationController<GeoAnimatable>(this, "pyronite_locomotion_controller", 2, state -> {
+            if(isInFirstPersonView()){
+                return PlayState.STOP;
+            }
+
             Entity e = state.getData(DataTickets.ENTITY);
 
             if(e instanceof Player player){
@@ -87,6 +106,10 @@ public class PyroniteRace extends AbstractRace {
         }));
 
         controllers.add(new AnimationController<GeoAnimatable>(this, "pyronite_pose_controller", 2, state -> {
+            if(isInFirstPersonView()){
+                return PlayState.STOP;
+            }
+
             Entity e = state.getData(DataTickets.ENTITY);
             if (e instanceof  LivingEntity entity){
                 if (entity.isPassenger()){
@@ -100,6 +123,10 @@ public class PyroniteRace extends AbstractRace {
         }));
 
         controllers.add(new AnimationController<GeoAnimatable>(this, "pyronite_arm_controller", 2, state -> {
+            if(isInFirstPersonView()){
+                return PlayState.STOP;
+            }
+
             Entity e = state.getData(DataTickets.ENTITY);
             RawAnimation using = RawAnimation.begin().thenPlayAndHold("using");
 
@@ -119,6 +146,9 @@ public class PyroniteRace extends AbstractRace {
             return PlayState.STOP;
         }));
 
+        controllers.add(new AnimationController<GeoAnimatable>(this, "first_person_pyronite_arm_controller", 2, state -> {
+            return PlayState.STOP;
+        }));
     }
 
     @Override

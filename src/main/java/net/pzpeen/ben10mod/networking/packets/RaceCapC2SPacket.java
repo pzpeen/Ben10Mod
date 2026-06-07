@@ -53,7 +53,7 @@ public class RaceCapC2SPacket {
             ServerPlayer player = context.getSender();
             if (player != null){
                 player.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
-                    raceCap.setRace(this.alienID);
+                    raceCap.setRace(this.alienID, player);
                 });
                 if(this.soundEvent != null){
                     player.serverLevel().playSound(null, player.getX(), player.getY(), player.getZ(),
