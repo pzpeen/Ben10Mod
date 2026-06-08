@@ -26,7 +26,7 @@ public class PyroniteRace extends AbstractRace {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private boolean isOnWater;
     private static final PyroniteRenderer RENDERER = new PyroniteRenderer();
-    private static final AlienArmRenderer ARM_RENDERER = new AlienArmRenderer(id);
+    private static final AlienArmRenderer ARM_RENDERER = new PyroniteArmRenderer(id);
 
     public PyroniteRace() {
         super();
@@ -129,20 +129,25 @@ public class PyroniteRace extends AbstractRace {
 
             Entity e = state.getData(DataTickets.ENTITY);
             RawAnimation using = RawAnimation.begin().thenPlayAndHold("using");
+            RawAnimation swinging = RawAnimation.begin().thenLoop("swinging");
 
             if (e instanceof Player player){
 
                 if (player.swinging && !player.isSleeping()){
-                    return state.setAndContinue(RawAnimation.begin().thenLoop("swinging").thenWait(2));
+                    return state.setAndContinue(swinging);
                 }
                 if (player.isUsingItem()){
                     return state.setAndContinue(using);
                 }
 
             }
-            if(state.isCurrentAnimation(using)){
+
+            if(state.isCurrentAnimation(swinging) && state.getAnimationTick() < (0.29f*20.0f)+1.9){
+                return PlayState.CONTINUE;
+            }else if(state.isCurrentAnimation(using)){
                 state.resetCurrentAnimation();
             }
+
             return PlayState.STOP;
         }));
 

@@ -49,7 +49,7 @@ public abstract class AbstractRace implements GeoAnimatable {
 
     public abstract void render(PoseStack poseStack, Player player, MultiBufferSource bufferSource, int packedLight, float partialTick);
 
-    public static void renderAlienArm(AbstractRace race, RenderHandEvent event){
+    public void renderAlienArm(RenderHandEvent event){
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
 
@@ -57,7 +57,7 @@ public abstract class AbstractRace implements GeoAnimatable {
         MultiBufferSource bufferSource = event.getMultiBufferSource();
         int packedLight = event.getPackedLight();
         float partialTick = event.getPartialTick();
-        AlienArmRenderer renderer = race.getAlienArmRenderer();
+        AlienArmRenderer renderer = this.getAlienArmRenderer();
 
         if(event.getHand() == InteractionHand.MAIN_HAND){
             if(event.getItemStack().isEmpty()){
@@ -86,13 +86,12 @@ public abstract class AbstractRace implements GeoAnimatable {
                     poseStack.mulPose(Axis.ZP.rotationDegrees(swingSin * 10.0f));
                 }
 
-
                 renderer.render(
                         poseStack,
-                        race,
+                        this,
                         bufferSource,
                         null,
-                        bufferSource.getBuffer(renderer.getRenderType(race, renderer.getTextureLocation(race), null, partialTick)),
+                        bufferSource.getBuffer(renderer.getRenderType(this, renderer.getTextureLocation(this), null, partialTick)),
                         packedLight
                 );
 
