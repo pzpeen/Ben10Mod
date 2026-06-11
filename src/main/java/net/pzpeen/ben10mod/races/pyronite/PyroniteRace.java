@@ -6,9 +6,10 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.pzpeen.ben10mod.Ben10Mod;
+import net.pzpeen.ben10mod.effects.ModEffects;
 import net.pzpeen.ben10mod.races.AbstractRace;
-import net.pzpeen.ben10mod.races.AlienArmModel;
 import net.pzpeen.ben10mod.races.AlienArmRenderer;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
@@ -24,14 +25,12 @@ public class PyroniteRace extends AbstractRace {
     public static final ResourceLocation id = ResourceLocation.fromNamespaceAndPath(Ben10Mod.MOD_ID, "pyronite");
     private static final ResourceLocation icon = ResourceLocation.fromNamespaceAndPath(Ben10Mod.MOD_ID, "textures/races/"+id.getPath()+"/icon.png");
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
-    private boolean isOnWater;
     private static final PyroniteRenderer RENDERER = new PyroniteRenderer();
     private static final AlienArmRenderer ARM_RENDERER = new PyroniteArmRenderer(id);
 
     public PyroniteRace() {
         super();
     }
-
 
     @Override
     public ResourceLocation getID() {
@@ -44,25 +43,74 @@ public class PyroniteRace extends AbstractRace {
     }
 
     @Override
+    public float getCustomHeight() {
+        return 2.5f;
+    }
+
+    @Override
+    public float getCustomEyeHeight() {
+        return 2.1f;
+    }
+
+    public boolean isOnWater(){
+        return this.player.hasEffect(ModEffects.WET.get()) || player.isInWater();
+    }
+
+    @Override
+    public float getBaseDamage() {
+        return 6.0f;
+    }
+
+    @Override
+    public void doBareHandHit(LivingHurtEvent event) {
+        assert event.getSource().getEntity() != null;
+        if(this.isOnWater()) return;
+        event.getEntity().setSecondsOnFire(3);
+    }
+
+    @Override
+    public float getBaseArmor() {
+        return 12.0f;
+    }
+
+    @Override
+    public boolean isFireResistent() {
+        return true;
+    }
+
+    @Override
+    public boolean isWaterSensible() {
+        return true;
+    }
+
+    @Override
+    public boolean isWaterWeak() {
+        return true;
+    }
+
+    @Override
+    public int getWaterEffectDuration() {
+        return (15 * 20);
+    }
+
+    @Override
+    public boolean cannotSwim() {
+        return true;
+    }
+
+    @Override
     public AlienArmRenderer getAlienArmRenderer() {
         return ARM_RENDERER;
     }
-
 
     @Override
     public GeoRenderer<? extends AbstractRace> getRenderer() {
         return RENDERER;
     }
 
-    public boolean isOnWater(){
-        return this.isOnWater;
-    }
-
-
     //MODEL AND ANIMATIONS
     @Override
     public void render(PoseStack poseStack, Player player, MultiBufferSource bufferSource, int packedLight, float partialTick) {
-        this.isOnWater = player.isInWater();
 
         RENDERER.renderAlien(this, player, poseStack, bufferSource, packedLight, partialTick);
     }
@@ -76,15 +124,15 @@ public class PyroniteRace extends AbstractRace {
 
             Entity e = state.getData(DataTickets.ENTITY);
 
-            if(e instanceof Player player){
-                boolean onAir = !player.onGround() && !player.isPassenger() && !player.getAbilities().flying;
-                double deltaYSpeed = player.getDeltaMovement().y;
+            if(e instanceof Player pPlayer){
+                boolean onAir = !pPlayer.onGround() && !pPlayer.isPassenger() && !pPlayer.getAbilities().flying;
+                double deltaYSpeed = pPlayer.getDeltaMovement().y;
 
                 if (onAir && deltaYSpeed < -0.4){
                     return state.setAndContinue(RawAnimation.begin().thenPlayAndHold("falling"));
                 }
 
-                if(player.isCrouching()){
+                if(pPlayer.isCrouching()){
                     if (state.isMoving()){
                         return state.setAndContinue(RawAnimation.begin().thenLoop("crouching_walking"));
                     }
@@ -92,7 +140,7 @@ public class PyroniteRace extends AbstractRace {
                 }
 
                 if(state.isMoving()){
-                    if (player.isSprinting()){
+                    if (pPlayer.isSprinting()){
                         return state.setAndContinue(RawAnimation.begin().thenLoop("sprinting"));
                     }
                     return state.setAndContinue(RawAnimation.begin().thenLoop("walking"));
@@ -131,12 +179,12 @@ public class PyroniteRace extends AbstractRace {
             RawAnimation using = RawAnimation.begin().thenPlayAndHold("using");
             RawAnimation swinging = RawAnimation.begin().thenLoop("swinging");
 
-            if (e instanceof Player player){
+            if (e instanceof Player pPlayer){
 
-                if (player.swinging && !player.isSleeping()){
+                if (pPlayer.swinging && !pPlayer.isSleeping()){
                     return state.setAndContinue(swinging);
                 }
-                if (player.isUsingItem()){
+                if (pPlayer.isUsingItem()){
                     return state.setAndContinue(using);
                 }
 

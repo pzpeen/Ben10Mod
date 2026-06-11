@@ -1,26 +1,21 @@
 package net.pzpeen.ben10mod.races;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.client.event.RenderHandEvent;
-import net.pzpeen.ben10mod.Ben10Mod;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.pzpeen.ben10mod.effects.ModEffects;
 import net.pzpeen.ben10mod.utils.ModClientUtilities;
-import software.bernie.geckolib.cache.object.BakedGeoModel;
-import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
-import software.bernie.geckolib.core.animatable.model.CoreGeoBone;
-import software.bernie.geckolib.model.GeoModel;
 import software.bernie.geckolib.renderer.GeoRenderer;
-import software.bernie.geckolib.util.RenderUtils;
 
 public abstract class AbstractRace implements GeoAnimatable {
     protected Player player;
@@ -31,17 +26,52 @@ public abstract class AbstractRace implements GeoAnimatable {
         this.player = player;
     }
 
+    public abstract ResourceLocation getID();
+
+    public abstract ResourceLocation getIcon();
+
+    public float getCustomWidth(){return 0.6f;}
+
+    public float getCustomHeight(){return 1.8f;}
+
+    public float getCustomEyeHeight(){return 1.62f;}
+
+    public float getBaseDamage(){return 1.0f;}
+
+    public void doBareHandHit(LivingHurtEvent event){}
+
+    public float getBaseArmor(){return 0.0f;}
+
+    public boolean isFireResistent(){return false;}
+
+    public boolean cannotSwim(){return false;}
+
+    //If true he gets the wet effect when in water (getWaterEffect is called, and wet effect give a buff or debuff if isWaterWeak)
+    public boolean isWaterSensible(){return false;}
+
+    //Gives a buff or a debuff to an Alien that is water sensible (Default is debuff)
+    public MobEffectInstance getWaterEffect () {
+        return new MobEffectInstance(
+            ModEffects.WET.get(),
+            getWaterEffectDuration(),
+            0,
+            false,
+            false
+        );
+    }
+
+    public boolean isWaterWeak(){return false;}
+
+    public boolean isWaterStrong(){return false;}
+
+    public int getWaterEffectDuration(){return 100;}
+
     public boolean isInFirstPersonView(){
         if(this.player.level().isClientSide()){
             return ModClientUtilities.isLocalPlayerFirstPerson(this.player);
         }
         return false;
     }
-
-
-    public abstract ResourceLocation getID();
-
-    public abstract ResourceLocation getIcon();
 
     public abstract AlienArmRenderer getAlienArmRenderer();
 

@@ -43,7 +43,7 @@ public class OmnitrixItem extends Item implements GeoItem {
     }
 
     @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, InteractionHand pUsedHand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, @NotNull InteractionHand pUsedHand) {
         ItemStack itemStack = pPlayer.getItemInHand(pUsedHand);
         if(!pLevel.isClientSide){
             pPlayer.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(pwrCap -> {

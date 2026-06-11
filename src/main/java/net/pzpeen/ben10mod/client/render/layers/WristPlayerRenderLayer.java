@@ -25,7 +25,7 @@ public class WristPlayerRenderLayer extends RenderLayer<AbstractClientPlayer, Pl
     public void render(PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, AbstractClientPlayer pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTick, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
 
         pLivingEntity.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent((pwrCap) -> {
-            System.out.println("Cliente, menu aberto: " + pwrCap.isHudActive());
+            //System.out.println("Cliente, menu aberto: " + pwrCap.isHudActive());
 
             if(pwrCap.getInventory().getStackInSlot(0).getItem() instanceof OmnitrixItem){
                 ItemStack stack = pwrCap.getInventory().getStackInSlot(0);

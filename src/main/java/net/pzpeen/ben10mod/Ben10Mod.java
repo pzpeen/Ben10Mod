@@ -9,6 +9,7 @@ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 import net.pzpeen.ben10mod.client.gui.ModMenus;
 import net.pzpeen.ben10mod.client.gui.menus.PowerInventoryScreen;
+import net.pzpeen.ben10mod.effects.ModEffects;
 import net.pzpeen.ben10mod.items.ModCreativeTabs;
 import net.pzpeen.ben10mod.items.ModItems;
 import net.pzpeen.ben10mod.networking.ModNetworking;
@@ -37,6 +38,7 @@ public class Ben10Mod
         RacesRegistries.register();
         ModItems.register(modEventBus);
         ModSounds.register(modEventBus);
+        ModEffects.register(modEventBus);
 
 
         // Register the commonSetup method for modloading

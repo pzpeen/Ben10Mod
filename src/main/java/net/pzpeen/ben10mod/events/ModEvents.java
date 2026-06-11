@@ -2,24 +2,33 @@ package net.pzpeen.ben10mod.events;
 
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ShieldItem;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.entity.living.LivingAttackEvent;
+import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.pzpeen.ben10mod.Ben10Mod;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
-import net.pzpeen.ben10mod.capabilities.race_capability.RaceCap;
 import net.pzpeen.ben10mod.capabilities.race_capability.RaceCapProvider;
 import net.pzpeen.ben10mod.networking.ModNetworking;
 import net.pzpeen.ben10mod.networking.packets.PowerCapS2CPacket;
 import net.pzpeen.ben10mod.networking.packets.RaceCapS2CPacket;
 
+
 public class ModEvents {
 
     @Mod.EventBusSubscriber(modid = Ben10Mod.MOD_ID, bus = Mod.EventBusSubscriber.Bus.FORGE)
     public static class ForgeBus{
+
+        //Cap events
 
         @SubscribeEvent
         public static void onAttachCapabilitiesEvent(AttachCapabilitiesEvent<Entity> event){
@@ -108,6 +117,74 @@ public class ModEvents {
             }
 
 
+        }
+
+        //Armor Events
+
+        @SubscribeEvent
+        public static void onEquipmentChange(LivingEquipmentChangeEvent event){
+            if(event.getEntity() instanceof Player player){
+                if(event.getSlot().isArmor()){
+                    player.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
+                        if(raceCap.getRace() != null){
+                            ItemStack armor = event.getTo();
+
+                            if(!armor.isEmpty()){
+                                player.setItemSlot(event.getSlot(), ItemStack.EMPTY);
+
+                                if(!player.getInventory().add(armor)){
+                                    player.drop(armor, false);
+                                }
+                            }
+                        }
+                    });
+                //Blocking Shield if transformed
+                }else if(event.getSlot() == EquipmentSlot.OFFHAND){
+                    player.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
+                        if(raceCap.getRace() != null){
+                            ItemStack toOffHandItem = event.getTo();
+                            if(toOffHandItem.getItem() instanceof ShieldItem){
+                                player.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
+
+                                if(!player.getInventory().add(toOffHandItem)){
+                                    player.drop(toOffHandItem, false);
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+        }
+
+
+
+        //Combat Events
+
+        @SubscribeEvent
+        public static void onLivingAttack(LivingAttackEvent event){
+            if(!(event.getEntity() instanceof Player player)) return;
+
+            if(event.getSource().is(DamageTypeTags.IS_FIRE)){
+                player.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
+                    if (raceCap.getRace() != null){
+                        if(raceCap.getRace().isFireResistent()){
+                            event.cancel();
+                        }
+                    }
+                });
+            }
+
+        }
+
+        @SubscribeEvent
+        public static void onLivingHurt(LivingHurtEvent event){
+            if (!(event.getSource().getEntity() instanceof Player player)) return;
+
+            player.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
+                if(raceCap.getRace() != null && player.getMainHandItem().isEmpty()){
+                    raceCap.getRace().doBareHandHit(event);
+                }
+            });
         }
     }
 }
