@@ -15,6 +15,7 @@ import net.pzpeen.ben10mod.items.ModItems;
 import net.pzpeen.ben10mod.networking.ModNetworking;
 import net.pzpeen.ben10mod.races.RacesRegistries;
 import net.pzpeen.ben10mod.sounds.ModSounds;
+import net.pzpeen.ben10mod.systems.CodonStream;
 import org.slf4j.Logger;
 import software.bernie.geckolib.GeckoLib;
 
@@ -46,6 +47,8 @@ public class Ben10Mod
 
         // Register ourselves for server and other game events we are interested in
         MinecraftForge.EVENT_BUS.register(this);
+
+        CodonStream.initializeCodonStreamBank();
 
     }
 

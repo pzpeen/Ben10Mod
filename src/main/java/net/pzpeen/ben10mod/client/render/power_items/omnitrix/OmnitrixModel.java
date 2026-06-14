@@ -7,6 +7,7 @@ import net.minecraft.world.item.ItemStack;
 import net.pzpeen.ben10mod.Ben10Mod;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCap;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
+import net.pzpeen.ben10mod.items.custom.omnitrix.AbstractOmnitrixItem;
 import net.pzpeen.ben10mod.items.custom.omnitrix.OmnitrixItem;
 import software.bernie.geckolib.cache.object.GeoBone;
 import software.bernie.geckolib.constant.DataTickets;
@@ -44,8 +45,8 @@ public class OmnitrixModel extends GeoModel<OmnitrixItem> {
 
         ItemStack stack = animationState.getData(DataTickets.ITEMSTACK);
 
-        if (stack.hasTag() && stack.getTag().contains("playerUsingUUID")){
-            UUID playerUUID = stack.getTag().getUUID("playerUsingUUID");
+        if (stack.hasTag() && stack.getTag().contains(AbstractOmnitrixItem.playerUsingUUIDTag)){
+            UUID playerUUID = stack.getTag().getUUID(AbstractOmnitrixItem.playerUsingUUIDTag);
             float angleNow = angleOnPlayer.getOrDefault(playerUUID, 0f);
             if (angleNow == 0f) dial.setRotX(0f);
             assert Minecraft.getInstance().level != null;

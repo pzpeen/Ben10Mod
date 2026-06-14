@@ -19,6 +19,9 @@ public class ModCreativeTabs {
                     .icon(() -> new ItemStack(ModItems.OMNITRIX.get()))
                     .displayItems((itemDisplayParameters, output) -> {
                         output.accept(ModItems.OMNITRIX.get());
+                        output.accept(ModItems.OMNI_CORE_LVL2.get());
+                        output.accept(ModItems.BATTERY_LVL2.get());
+                        output.accept(ModItems.CODON_CONNECTOR.get());
 
                     }).build());
 

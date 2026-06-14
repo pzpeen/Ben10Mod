@@ -12,6 +12,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
+import net.pzpeen.ben10mod.Ben10Mod;
 import net.pzpeen.ben10mod.effects.ModEffects;
 import net.pzpeen.ben10mod.utils.ModClientUtilities;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
@@ -28,7 +29,9 @@ public abstract class AbstractRace implements GeoAnimatable {
 
     public abstract ResourceLocation getID();
 
-    public abstract ResourceLocation getIcon();
+    public static ResourceLocation getIcon(ResourceLocation alienId){
+        return ResourceLocation.fromNamespaceAndPath(Ben10Mod.MOD_ID, "textures/races/"+alienId.getPath()+"/icon.png");
+    }
 
     public float getCustomWidth(){return 0.6f;}
 
