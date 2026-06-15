@@ -16,10 +16,10 @@ public class ModItems {
             DeferredRegister.create(ForgeRegistries.ITEMS, Ben10Mod.MOD_ID);
 
     public static final RegistryObject<Item> OMNITRIX = ITEMS.register("omnitrix", () ->
-            new OmnitrixItem(new Item.Properties().stacksTo(1)));
+            new OmnitrixItem(new Item.Properties().stacksTo(1).fireResistant()));
 
     public static final RegistryObject<Item> OMNI_CORE_LVL2 = ITEMS.register("omni_core_lvl2", () ->
-            new OmniCoreLvl2Item(new Item.Properties().stacksTo(1)));
+            new OmniCoreLvl2Item(new Item.Properties().stacksTo(1).fireResistant()));
 
     public static final RegistryObject<Item> BATTERY_LVL2 = ITEMS.register("battery_lvl2", () ->
             new BatteryLvl2Item(new Item.Properties().stacksTo(1)));

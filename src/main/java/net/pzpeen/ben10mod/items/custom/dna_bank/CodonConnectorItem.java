@@ -20,6 +20,7 @@ public class CodonConnectorItem extends AbstractDnaBankItem{
         dnaBank.unlockDNA(PyroniteRace.id);
 
         dnaBank.getPlaylist(0).add(PyroniteRace.id);
+        dnaBank.getPlaylist(0).add(PyroniteRace.id);
 
         AbstractDnaBankItem.saveDnaBank(stack, dnaBank);
         return stack;

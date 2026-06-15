@@ -8,11 +8,17 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.RenderLayerParent;
 import net.minecraft.client.renderer.entity.layers.RenderLayer;
 import net.minecraft.client.renderer.texture.OverlayTexture;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
+import net.pzpeen.ben10mod.client.render.power_items.omnitrix.OmnitrixRenderer;
+import net.pzpeen.ben10mod.items.custom.dna_bank.AbstractDnaBankItem;
+import net.pzpeen.ben10mod.items.custom.omnitrix.AbstractOmnitrixItem;
 import net.pzpeen.ben10mod.items.custom.omnitrix.OmnitrixItem;
+import net.pzpeen.ben10mod.systems.DnaBank;
+import net.pzpeen.ben10mod.systems.Playlist;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 
 public class WristPlayerRenderLayer extends RenderLayer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
@@ -35,6 +41,19 @@ public class WristPlayerRenderLayer extends RenderLayer<AbstractClientPlayer, Pl
                 this.getParentModel().leftArm.translateAndRotate(pPoseStack);
 
                 BlockEntityWithoutLevelRenderer customRenderer = IClientItemExtensions.of(stack).getCustomRenderer();
+
+                if(customRenderer instanceof OmnitrixRenderer){
+                    if(!pwrCap.isHudActive()){
+                        ((OmnitrixRenderer) customRenderer).setSelectedAlien(null);
+                    }else{
+                        DnaBank dnaBank = AbstractDnaBankItem.getDnaBank(AbstractOmnitrixItem.getDnaBankItem(stack));
+                        Playlist<ResourceLocation> selectedPlaylist = dnaBank.getPlaylist(AbstractOmnitrixItem.getSelectedPlaylist(stack));
+                        //System.out.println("hudSlotSelected: "+pwrCap.getHudSlot());
+                        //System.out.println("AlienOnPlaylistInHudPosition:"+ selectedPlaylist.get(pwrCap.getHudSlot()));
+                        int convertedSlot = pwrCap.getHudSlot() == 0 ? 9 : pwrCap.getHudSlot() - 1;
+                        ((OmnitrixRenderer) customRenderer).setSelectedAlien(selectedPlaylist.get(convertedSlot));
+                    }
+                }
 
                 if(customRenderer instanceof GeoItemRenderer<?> geoItemRenderer){
                     geoItemRenderer.renderByItem(

@@ -2,8 +2,12 @@ package net.pzpeen.ben10mod.items.custom.omnitrix;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.Level;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCap;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
@@ -11,6 +15,7 @@ import net.pzpeen.ben10mod.client.render.power_items.omnitrix.OmnitrixModel;
 import net.pzpeen.ben10mod.client.render.power_items.omnitrix.OmnitrixRenderer;
 import net.pzpeen.ben10mod.items.ModItems;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
 import software.bernie.geckolib.core.animation.AnimatableManager;
@@ -20,6 +25,7 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.renderer.GeoItemRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.List;
 import java.util.function.Consumer;
 
 public class OmnitrixItem extends AbstractOmnitrixItem {
@@ -41,6 +47,41 @@ public class OmnitrixItem extends AbstractOmnitrixItem {
         AbstractOmnitrixItem.setDnaBankItem(omnitrixStack, ModItems.CODON_CONNECTOR.get().getDefaultInstance());
 
         return omnitrixStack;
+    }
+
+    @Override
+    public void appendHoverText(ItemStack pStack, @Nullable Level pLevel, List<Component> pTooltipComponents, TooltipFlag pIsAdvanced) {
+        super.appendHoverText(pStack, pLevel, pTooltipComponents, pIsAdvanced);
+
+        pTooltipComponents.add(Component.literal("COMPONENTS:"));
+
+        CompoundTag nbt = pStack.getTag();
+        if(nbt == null){
+            pTooltipComponents.add(Component.literal("ERROR NO COMPONENTS"));
+            return;
+        }
+
+        if(nbt.contains(dnaBankComponentTag)){
+            ItemStack dnaBankStack = ItemStack.of(nbt.getCompound(dnaBankComponentTag));
+            pTooltipComponents.add(Component.literal("Dna Bank: ").append(dnaBankStack.getHoverName()));
+        }else{
+            pTooltipComponents.add(Component.literal("NO DNA BANK"));
+        }
+
+        if(nbt.contains(batteryComponentTag)){
+            ItemStack batteryStack = ItemStack.of(nbt.getCompound(batteryComponentTag));
+            pTooltipComponents.add(Component.literal("Battery: ").append(batteryStack.getHoverName()));
+        }else{
+            pTooltipComponents.add(Component.literal("NO BATTERY"));
+        }
+
+        if(nbt.contains(omniCoreComponentTag)){
+            ItemStack omnicoreStack = ItemStack.of(nbt.getCompound(omniCoreComponentTag));
+            pTooltipComponents.add(Component.literal("Omni core: ").append(omnicoreStack.getHoverName()));
+        }else{
+            pTooltipComponents.add(Component.literal("NO CORE"));
+        }
+
     }
 
     @Override
@@ -83,7 +124,7 @@ public class OmnitrixItem extends AbstractOmnitrixItem {
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {
-            private GeoItemRenderer<OmnitrixItem> renderer = null;
+            private OmnitrixRenderer renderer = null;
 
             @Override
             public BlockEntityWithoutLevelRenderer getCustomRenderer() {

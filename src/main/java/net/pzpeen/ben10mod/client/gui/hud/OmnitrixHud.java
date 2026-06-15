@@ -21,16 +21,24 @@ import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.event.TickEvent;
 import net.pzpeen.ben10mod.Ben10Mod;
+import net.pzpeen.ben10mod.capabilities.power_capability.PowerCap;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
+import net.pzpeen.ben10mod.items.custom.dna_bank.AbstractDnaBankItem;
+import net.pzpeen.ben10mod.items.custom.omnitrix.AbstractOmnitrixItem;
 import net.pzpeen.ben10mod.networking.ModNetworking;
 import net.pzpeen.ben10mod.networking.packets.PowerCapC2SPacket;
+import net.pzpeen.ben10mod.races.AbstractRace;
 import net.pzpeen.ben10mod.sounds.ModSounds;
+import net.pzpeen.ben10mod.systems.DnaBank;
+import net.pzpeen.ben10mod.systems.Playlist;
 import net.pzpeen.ben10mod.utils.ModUtilities;
 import org.lwjgl.glfw.GLFW;
 
 public class OmnitrixHud {
     private static final ResourceLocation OMNITRIX_HUD_TEXTURE = ResourceLocation.fromNamespaceAndPath(Ben10Mod.MOD_ID,
             "textures/gui/hud/omnitrix_hud.png");
+    public static final ResourceLocation LOCKED_ICON_TEXTURE = ResourceLocation.fromNamespaceAndPath(Ben10Mod.MOD_ID,
+            "textures/gui/hud/locked_icon.png");
 
     public static final float menuInterpolationSpeed = 0.2f;
     public static float menuAnimProgress = 0.0f;
@@ -51,9 +59,10 @@ public class OmnitrixHud {
             true
             );
 
-    public static void renderOmnitrixHud(GuiGraphics pGuiGraphics, float pPartialTick, int pSelectedSlot){
+    public static void renderOmnitrixHud(GuiGraphics pGuiGraphics, float pPartialTick, PowerCap pPowerCap){
         int screenWidth = pGuiGraphics.guiWidth();
         int screenHeight = pGuiGraphics.guiHeight();
+        int pSelectedSlot = pPowerCap.getHudSlot();
 
         int guiWidth = 202;
         int guiHeight = 22;
@@ -64,6 +73,12 @@ public class OmnitrixHud {
 
         pGuiGraphics.blit(OMNITRIX_HUD_TEXTURE, startX, startY, 0, 0, guiWidth+22, guiHeight);
 
+        ItemStack omnitrixStack = pPowerCap.getInventory().getStackInSlot(0);
+        int selectedPlaylist = AbstractOmnitrixItem.getSelectedPlaylist(omnitrixStack);
+        //System.out.println(AbstractOmnitrixItem.getDnaBankItem(omnitrixStack));
+        DnaBank dnaBank = AbstractDnaBankItem.getDnaBank(AbstractOmnitrixItem.getDnaBankItem(omnitrixStack));
+        Playlist<ResourceLocation> playlist = dnaBank.getPlaylist(selectedPlaylist);
+
         for(int i = 0; i < 10; i++){
             // i representa o slot real enquanto _i representa o slot da render
             int _i = i == 0 ? 9 : i - 1;
@@ -71,9 +86,15 @@ public class OmnitrixHud {
             int xSlot = startX + 3 + (_i * 20);
             int ySlot = startY + 3;
 
+            int xRealSlot = startX + 3 + (i * 20);
+
+            ResourceLocation alienIcon = AbstractRace.getIconOrLockedIcon(playlist.get(i));
+            //System.out.println(alienIcon);
+
             if (pSelectedSlot == i){
                 pGuiGraphics.blit(OMNITRIX_HUD_TEXTURE, xSlot-4, ySlot -3, 0, 22, 24, 24);
             }
+            pGuiGraphics.blit(alienIcon, xRealSlot, ySlot, 0, 0, 16, 16, 16, 16);
 
         }
 
@@ -111,7 +132,7 @@ public class OmnitrixHud {
         playerRenderer.getModel().leftArm.translateAndRotate(poseStack);
         omnitrixRenderer.renderByItem(
                 omnitrixStack,
-                ItemDisplayContext.NONE,
+                ItemDisplayContext.FIRST_PERSON_RIGHT_HAND,
                 poseStack,
                 multiBufferSource,
                 combinedLight,

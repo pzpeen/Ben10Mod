@@ -13,6 +13,7 @@ public class DnaBank {
     private final HashMap<ResourceLocation, DnaStatus> storedDNA = new HashMap<>();
     private int maxDnaCapability = 10;
     private int maxPlaylists = 1;
+    @SuppressWarnings("unchecked")
     private final Playlist<ResourceLocation>[] playlists = new Playlist[10];
 
     public static final String dnaListTag = "dnaListTag";
@@ -90,7 +91,7 @@ public class DnaBank {
 
         CompoundTag dnaListNbt = new CompoundTag();
 
-        storedDNA.forEach((id, status) -> dnaListNbt.putString(id.toString(), status.name()));
+        storedDNA.forEach((id, status) -> dnaListNbt.putString(id.toString(), status.getNbtKey()));
 
         nbt.put(dnaListTag, dnaListNbt);
 
@@ -120,9 +121,11 @@ public class DnaBank {
 
             for(String sAlienID : dnaListTag.getAllKeys()){
                 ResourceLocation alienID = ResourceLocation.parse(sAlienID);
-                String sStatus = nbt.getString(sAlienID);
-                DnaStatus status = DnaStatus.valueOf(sStatus);
+                String sStatus = dnaListTag.getString(sAlienID);
+                //System.out.println("status "+ sAlienID + ":" + sStatus);
+                DnaStatus status = DnaStatus.fromKey(sStatus);
                 dnaBank.insertDNA(alienID, status);
+
             }
 
         }

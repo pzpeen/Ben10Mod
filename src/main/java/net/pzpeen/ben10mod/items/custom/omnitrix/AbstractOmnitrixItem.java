@@ -22,6 +22,7 @@ public abstract class AbstractOmnitrixItem extends Item implements GeoItem {
     public static final String omniCoreComponentTag = "omniCoreComponent";
     public static final String batteryComponentTag = "batteryComponent";
     public static final String dnaBankComponentTag = "dnaBankComponent";
+    public static final String selectedPlaylist = "selectedPlaylist";
 
     public AbstractOmnitrixItem(Properties pProperties) {
         super(pProperties);
@@ -70,12 +71,32 @@ public abstract class AbstractOmnitrixItem extends Item implements GeoItem {
         return ItemStack.EMPTY;
     }
 
-    public static ItemStack getDnaBank(ItemStack omnitrix){
+    public static ItemStack getDnaBankItem(ItemStack omnitrix){
         if(omnitrix.hasTag() && omnitrix.getTag().contains(dnaBankComponentTag)){
             CompoundTag dnaBankNbt = omnitrix.getTag().getCompound(dnaBankComponentTag);
             return ItemStack.of(dnaBankNbt);
+        }else{
+            System.err.println("OMNITRIX ITEM WITHOUT DNABANKITEM");
+            return ItemStack.EMPTY;
         }
-        return ItemStack.EMPTY;
+
+    }
+
+    public static void setSelectedPlaylist(ItemStack omnitrix, int playlist){
+        if(playlist < 0 || playlist > 9){
+            omnitrix.getOrCreateTag().putInt(selectedPlaylist, 0);
+        }else{
+            omnitrix.getOrCreateTag().putInt(selectedPlaylist, playlist);
+        }
+    }
+
+    public static int getSelectedPlaylist(ItemStack omnitrix){
+        if(omnitrix.getOrCreateTag().contains(selectedPlaylist)){
+            return omnitrix.getOrCreateTag().getInt(selectedPlaylist);
+        }
+        omnitrix.getOrCreateTag().putInt(selectedPlaylist, 0);
+        return 0;
+
     }
 
     @Override

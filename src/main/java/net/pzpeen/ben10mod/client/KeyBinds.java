@@ -53,22 +53,24 @@ public class KeyBinds {
                 lastClickActivatePower = System.currentTimeMillis();
                 player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(pwrCap -> {
                         if (pwrCap.getInventory().getStackInSlot(0).is(ModTags.Items.POWER_ITEMS)){
-                            if (!pwrCap.isHudActive()){
-                                if (pwrCap.getInventory().getStackInSlot(0).is(ModItems.OMNITRIX.get())){
+                            if(pwrCap.getInventory().getStackInSlot(0).is(ModItems.OMNITRIX.get())){
+
+                                if (!pwrCap.isHudActive()){
                                     player.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
                                         if(raceCap.getRace() == null){
                                             ModNetworking.sendToServer(new PowerCapC2SPacket(!pwrCap.isHudActive(), pwrCap.getHudSlot(), ModSounds.OMNITRIX_ACTIVATE.get()));
                                             Minecraft.getInstance().getSoundManager().play(OmnitrixHud.omnitrixActiveSoundInstance);
                                         }
                                     });
-                                }
 
-                            }else {
-                                if (pwrCap.getInventory().getStackInSlot(0).is(ModItems.OMNITRIX.get())){
+                                }else {
                                     Minecraft.getInstance().getSoundManager().stop(OmnitrixHud.omnitrixActiveSoundInstance);
                                     ModNetworking.sendToServer(new PowerCapC2SPacket(!pwrCap.isHudActive(), pwrCap.getHudSlot(), ModSounds.OMNITRIX_DEACTIVATE.get()));
                                 }
+
                             }
+
+
 
                         }
                 });

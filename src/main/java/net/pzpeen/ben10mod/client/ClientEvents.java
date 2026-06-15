@@ -54,7 +54,7 @@ public class ClientEvents {
 
                         event.setCanceled(true);
                         if(pwrCap.getInventory().getStackInSlot(0).is(ModItems.OMNITRIX.get())){
-                            OmnitrixHud.renderOmnitrixHud(event.getGuiGraphics(), event.getPartialTick(), pwrCap.getHudSlot());
+                            OmnitrixHud.renderOmnitrixHud(event.getGuiGraphics(), event.getPartialTick(), pwrCap);
                         }
 
                     }
