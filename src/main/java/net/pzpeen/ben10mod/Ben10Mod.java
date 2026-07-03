@@ -13,6 +13,7 @@ import net.pzpeen.ben10mod.effects.ModEffects;
 import net.pzpeen.ben10mod.items.ModCreativeTabs;
 import net.pzpeen.ben10mod.items.ModItems;
 import net.pzpeen.ben10mod.networking.ModNetworking;
+import net.pzpeen.ben10mod.powers.PowerRegistries;
 import net.pzpeen.ben10mod.races.RacesRegistries;
 import net.pzpeen.ben10mod.sounds.ModSounds;
 import net.pzpeen.ben10mod.systems.CodonStream;
@@ -37,6 +38,7 @@ public class Ben10Mod
         ModMenus.register(modEventBus);
         ModCreativeTabs.register(modEventBus);
         RacesRegistries.register();
+        PowerRegistries.register();
         ModItems.register(modEventBus);
         ModSounds.register(modEventBus);
         ModEffects.register(modEventBus);

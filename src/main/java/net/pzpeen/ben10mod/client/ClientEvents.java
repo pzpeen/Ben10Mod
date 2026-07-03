@@ -1,6 +1,7 @@
 package net.pzpeen.ben10mod.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.api.distmarker.Dist;
@@ -15,7 +16,11 @@ import net.pzpeen.ben10mod.capabilities.race_capability.RaceCapProvider;
 import net.pzpeen.ben10mod.client.gui.hud.OmnitrixHud;
 import net.pzpeen.ben10mod.client.render.layers.WristPlayerRenderLayer;
 import net.pzpeen.ben10mod.items.ModItems;
+import net.pzpeen.ben10mod.networking.ModNetworking;
+import net.pzpeen.ben10mod.networking.packets.power_animations.PowerLeftMouseC2SPacket;
+import net.pzpeen.ben10mod.powers.OmnitrixPower;
 import net.pzpeen.ben10mod.utils.ModTags;
+import org.lwjgl.glfw.GLFW;
 
 
 public class ClientEvents {
@@ -34,6 +39,32 @@ public class ClientEvents {
         public static void onKeyInput(InputEvent.Key event){
             KeyBinds.registerFunctions(event);
             OmnitrixHud.registerNumberControl(event);
+        }
+
+        @SubscribeEvent
+        public static void onMouseClick(InputEvent.MouseButton.Pre event){
+            LocalPlayer player = Minecraft.getInstance().player;
+            if (player == null) return;
+            //if(Minecraft.getInstance().screen.isPauseScreen())
+            if(event.getButton() == GLFW.GLFW_MOUSE_BUTTON_LEFT){
+                player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(powerCap -> {
+                    if(powerCap.getPower() instanceof OmnitrixPower power){
+                        if(Minecraft.getInstance().screen != null){
+                            return;
+                        }
+                        if(powerCap.isHudActive()){
+                            if(power.getSlapAnimationTick() <= 0){
+                                event.cancel();
+                                ModNetworking.sendToServer(new PowerLeftMouseC2SPacket());
+                            }
+
+                        }
+
+                    }
+
+                });
+            }
+
         }
 
         @SubscribeEvent
@@ -92,19 +123,24 @@ public class ClientEvents {
                 }
             });
 
+            OmnitrixPower.process1stPersonBrightAnim(event);
+
         }
 
         @SubscribeEvent
         public static void onRenderPlayer(RenderPlayerEvent.Pre event){
             Player player = event.getEntity();
+
             player.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
                 if (raceCap.getRace() != null){
                     event.cancel();
                     raceCap.getRace().render(event.getPoseStack(), player, event.getMultiBufferSource(), event.getPackedLight(), event.getPartialTick());
                 }
+                OmnitrixPower.processBrightAnim(event);
             });
 
         }
+
 
     }
 

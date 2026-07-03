@@ -8,6 +8,8 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 import net.pzpeen.ben10mod.Ben10Mod;
 import net.pzpeen.ben10mod.networking.packets.*;
+import net.pzpeen.ben10mod.networking.packets.power_animations.PowerLeftMouseC2SPacket;
+import net.pzpeen.ben10mod.networking.packets.power_animations.PowerLeftMouseS2CPacket;
 
 public class ModNetworking {
     private static SimpleChannel INSTANCE;
@@ -57,6 +59,18 @@ public class ModNetworking {
                 .decoder(RaceCapC2SPacket::decode)
                 .consumerMainThread(RaceCapC2SPacket::handle)
                 .add();
+
+        INSTANCE.messageBuilder(PowerLeftMouseS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(PowerLeftMouseS2CPacket::encode)
+                .decoder(PowerLeftMouseS2CPacket::decode)
+                .consumerMainThread(PowerLeftMouseS2CPacket::handle)
+                .add();
+        INSTANCE.messageBuilder(PowerLeftMouseC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .encoder(PowerLeftMouseC2SPacket::encode)
+                .decoder(PowerLeftMouseC2SPacket::decode)
+                .consumerMainThread(PowerLeftMouseC2SPacket::handle)
+                .add();
+
     }
 
     public static <MSG> void sendToServer(MSG msg){

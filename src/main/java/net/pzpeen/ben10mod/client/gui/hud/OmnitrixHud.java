@@ -27,6 +27,7 @@ import net.pzpeen.ben10mod.items.custom.dna_bank.AbstractDnaBankItem;
 import net.pzpeen.ben10mod.items.custom.omnitrix.AbstractOmnitrixItem;
 import net.pzpeen.ben10mod.networking.ModNetworking;
 import net.pzpeen.ben10mod.networking.packets.PowerCapC2SPacket;
+import net.pzpeen.ben10mod.powers.OmnitrixPower;
 import net.pzpeen.ben10mod.races.AbstractRace;
 import net.pzpeen.ben10mod.sounds.ModSounds;
 import net.pzpeen.ben10mod.systems.DnaBank;
@@ -141,25 +142,61 @@ public class OmnitrixHud {
         poseStack.popPose();
 
         //Right hand render
-        poseStack.pushPose();
-
-        float rightHandYPos = Mth.lerp(smoothInterpolationProgress, -2.0f, -0.3f);
-
-        poseStack.translate(0.5f, rightHandYPos, -0.75f);
-        poseStack.mulPose(Axis.XP.rotationDegrees(30.0f));
-        poseStack.mulPose(Axis.YP.rotationDegrees(50.0f));
-        poseStack.mulPose(Axis.ZN.rotationDegrees(-30.0f));
-        poseStack.mulPose(Axis.XN.rotationDegrees( 80.0f));
-        poseStack.mulPose(Axis.YN.rotationDegrees(-30.0f));
-
-        playerRenderer.renderRightHand(poseStack, multiBufferSource, combinedLight, mc.player);
+        mc.player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(powerCap -> {
+            int slapTick = 0;
+            if(powerCap.getPower() instanceof OmnitrixPower power){
+                slapTick = power.getSlapAnimationTick();
+                //System.out.println("GETTING SLAP ANIMATION TICK ON 1 PERSON, TICK: " + slapTick);
+            }
 
 
-        poseStack.popPose();
+            poseStack.pushPose();
+            float rightHandYPos = Mth.lerp(smoothInterpolationProgress, -2.0f, -0.3f);
+            if(slapTick > 0){
+                if(slapTick >= 4){
+                    float progress = (8 - slapTick) / 4.0f;
+
+                    poseStack.translate(0.5f - (progress * 0.15), rightHandYPos + (progress * 0.2f), -0.75f + (progress * 0.1f));
+                    poseStack.mulPose(Axis.XP.rotationDegrees(30.0f));
+                    poseStack.mulPose(Axis.YP.rotationDegrees(50.0f));
+                    poseStack.mulPose(Axis.ZN.rotationDegrees(-30.0f));
+                    poseStack.mulPose(Axis.XN.rotationDegrees( 80.0f - (progress * 30f)));
+                    poseStack.mulPose(Axis.YN.rotationDegrees(-30.0f));
+
+                }else{
+                    float progress = (3 - slapTick) / 3.0f;
+
+                    poseStack.translate(0.35f, ((rightHandYPos +  0.2f) - (progress * 0.2f)), -0.65f - (progress * 0.1f));
+                    poseStack.mulPose(Axis.XP.rotationDegrees(30.0f));
+                    poseStack.mulPose(Axis.YP.rotationDegrees(50.0f));
+                    poseStack.mulPose(Axis.ZN.rotationDegrees(-30.0f));
+                    poseStack.mulPose(Axis.XN.rotationDegrees( 50.0f + (progress * 30f)));
+                    poseStack.mulPose(Axis.YN.rotationDegrees(-30.0f));
+                }
+
+            }else{
+
+                poseStack.translate(0.5f, rightHandYPos, -0.75f);
+                poseStack.mulPose(Axis.XP.rotationDegrees(30.0f));
+                poseStack.mulPose(Axis.YP.rotationDegrees(50.0f));
+                poseStack.mulPose(Axis.ZN.rotationDegrees(-30.0f));
+                poseStack.mulPose(Axis.XN.rotationDegrees( 80.0f));
+                poseStack.mulPose(Axis.YN.rotationDegrees(-30.0f));
+
+            }
+
+            playerRenderer.renderRightHand(poseStack, multiBufferSource, combinedLight, mc.player);
+
+
+            poseStack.popPose();
+
+
+        });
+
 
     }
 
-    static ModUtilities.cooldown dialCooldown = new ModUtilities.cooldown(50);
+    static ModUtilities.Cooldown dialCooldown = new ModUtilities.Cooldown(50);
 
     public static void registerNumberControl(InputEvent.Key event){
 

@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -47,6 +48,15 @@ public class OmnitrixItem extends AbstractOmnitrixItem {
         AbstractOmnitrixItem.setDnaBankItem(omnitrixStack, ModItems.CODON_CONNECTOR.get().getDefaultInstance());
 
         return omnitrixStack;
+    }
+
+    @Override
+    public void inventoryTick(ItemStack pStack, Level pLevel, Entity pEntity, int pSlotId, boolean pIsSelected) {
+        if(!pLevel.isClientSide() && !pStack.hasTag()){
+            AbstractOmnitrixItem.setOmniCore(pStack, new ItemStack(ModItems.OMNI_CORE_LVL2.get()));
+            AbstractOmnitrixItem.setBattery(pStack, new ItemStack(ModItems.BATTERY_LVL2.get()));
+            AbstractOmnitrixItem.setDnaBankItem(pStack, ModItems.CODON_CONNECTOR.get().getDefaultInstance());
+        }
     }
 
     @Override

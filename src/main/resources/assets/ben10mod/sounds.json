@@ -28,5 +28,19 @@
     "sounds": [
       "ben10mod:omnitrix/omnitrix_putting"
     ]
+  },
+  "omnitrix_transformation_fail": {
+    "subtitles": "sounds.ben10mod.omnitrix_transformation_fail",
+    "sounds": [
+      "ben10mod:omnitrix/omnitrix_transformation_fail"
+    ]
+  },
+  "omnitrix_transformation": {
+    "subtitles": "sounds.ben10mod.omnitrix_transformation",
+    "sounds": [
+      "ben10mod:omnitrix/omnitrix_transformation_1",
+      "ben10mod:omnitrix/omnitrix_transformation_2",
+      "ben10mod:omnitrix/omnitrix_transformation_3"
+    ]
   }
 }

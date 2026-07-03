@@ -1,5 +1,6 @@
 package net.pzpeen.ben10mod.events;
 
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
@@ -9,6 +10,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ShieldItem;
 import net.minecraftforge.event.AttachCapabilitiesEvent;
+import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
@@ -18,6 +20,9 @@ import net.minecraftforge.fml.common.Mod;
 import net.pzpeen.ben10mod.Ben10Mod;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
 import net.pzpeen.ben10mod.capabilities.race_capability.RaceCapProvider;
+import net.pzpeen.ben10mod.client.gui.hud.OmnitrixHud;
+import net.pzpeen.ben10mod.items.ModItems;
+import net.pzpeen.ben10mod.items.custom.omnitrix.AbstractOmnitrixItem;
 import net.pzpeen.ben10mod.networking.ModNetworking;
 import net.pzpeen.ben10mod.networking.packets.PowerCapS2CPacket;
 import net.pzpeen.ben10mod.networking.packets.RaceCapS2CPacket;
@@ -53,6 +58,7 @@ public class ModEvents {
             event.getOriginal().getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(oldCap ->
                     event.getEntity().getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(newCap ->
                         newCap.getInventory().deserializeNBT(oldCap.getInventory().serializeNBT())
+
             ));
 
             //Keeping RaceCap on server
@@ -62,12 +68,28 @@ public class ModEvents {
         }
 
         @SubscribeEvent
+        public static void onPlayerChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event){
+            if(!event.getEntity().level().isClientSide() && event.getEntity() instanceof ServerPlayer player){
+                player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(powerCap -> {
+                    ModNetworking.sendToClientTrackingAndSelf(new PowerCapS2CPacket(powerCap.getInventory().serializeNBT(),
+                            event.getEntity().getUUID(), powerCap.isHudActive(), powerCap.getHudSlot(), powerCap.getPowerID()), player);
+                });
+
+                player.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
+                    ModNetworking.sendToClientTrackingAndSelf(new RaceCapS2CPacket(raceCap.getRaceId(), player.getUUID()), player);
+                });
+
+            }
+
+        }
+
+        @SubscribeEvent
         public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event){
             if(!event.getEntity().level().isClientSide()){
                 //Keeping PowerCap
                 event.getEntity().getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(pwrCap -> {
                     ModNetworking.sendToClientTrackingAndSelf(new PowerCapS2CPacket(pwrCap.getInventory().serializeNBT(), event.getEntity().getUUID(),
-                            pwrCap.isHudActive(), pwrCap.getHudSlot()), (ServerPlayer) event.getEntity());
+                            pwrCap.isHudActive(), pwrCap.getHudSlot(), pwrCap.getPowerID()), (ServerPlayer) event.getEntity());
                 });
 
                 //Keeping RaceCap
@@ -84,7 +106,7 @@ public class ModEvents {
                 //Keeping PowerCap
                 event.getEntity().getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(pwrCap -> {
                     ModNetworking.sendToClientTrackingAndSelf(new PowerCapS2CPacket(pwrCap.getInventory().serializeNBT(), event.getEntity().getUUID(),
-                            pwrCap.isHudActive(), pwrCap.getHudSlot()), (ServerPlayer) event.getEntity());
+                            pwrCap.isHudActive(), pwrCap.getHudSlot(), pwrCap.getPowerID()), (ServerPlayer) event.getEntity());
                 });
 
                 //Keeping RaceCap
@@ -102,7 +124,7 @@ public class ModEvents {
                 targetPlayer.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent((pwrCap) -> {
                     ModNetworking.sendToClientTrackingAndSelf(
                             new PowerCapS2CPacket(pwrCap.getInventory().serializeNBT(), targetPlayer.getUUID(),
-                                    pwrCap.isHudActive(), pwrCap.getHudSlot()),
+                                    pwrCap.isHudActive(), pwrCap.getHudSlot(), pwrCap.getPowerID()),
                             (ServerPlayer) event.getEntity());
                 });
 
@@ -186,5 +208,23 @@ public class ModEvents {
                 }
             });
         }
+
+
+        @SubscribeEvent
+        public static void onPlayerTick(TickEvent.PlayerTickEvent event){
+            if(event.phase == TickEvent.Phase.END){
+                event.player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(powerCap -> {
+                    if(powerCap.getPower() != null){
+                        powerCap.getPower().tick(event.player);
+                    }
+                });
+            }
+        }
+
+
+
     }
+
+
+
 }

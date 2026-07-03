@@ -1,6 +1,7 @@
 package net.pzpeen.ben10mod.items.custom.omnitrix;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
@@ -11,9 +12,14 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
+import net.pzpeen.ben10mod.items.custom.dna_bank.AbstractDnaBankItem;
+import net.pzpeen.ben10mod.items.custom.omni_core.AbstractOmniCoreItem;
 import net.pzpeen.ben10mod.networking.ModNetworking;
 import net.pzpeen.ben10mod.networking.packets.PowerCapS2CPacket;
+import net.pzpeen.ben10mod.powers.OmnitrixPower;
 import net.pzpeen.ben10mod.sounds.ModSounds;
+import net.pzpeen.ben10mod.systems.DnaBank;
+import net.pzpeen.ben10mod.systems.Playlist;
 import org.jetbrains.annotations.NotNull;
 import software.bernie.geckolib.animatable.GeoItem;
 
@@ -99,6 +105,16 @@ public abstract class AbstractOmnitrixItem extends Item implements GeoItem {
 
     }
 
+    public static void transform(ItemStack omnitrix, Player player, int alienSlotSelected){
+        ItemStack dnaBankItem = AbstractOmnitrixItem.getDnaBankItem(omnitrix);
+        DnaBank dnaBank = AbstractDnaBankItem.getDnaBank(dnaBankItem);
+        Playlist<ResourceLocation> playlist = dnaBank.getPlaylist(getSelectedPlaylist(omnitrix));
+        ItemStack core = getOmniCore(omnitrix);
+
+        AbstractOmniCoreItem omniCoreItem = (AbstractOmniCoreItem) core.getItem();
+        omniCoreItem.transform(player, playlist.get(alienSlotSelected));
+    }
+
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, @NotNull InteractionHand pUsedHand) {
         ItemStack itemStack = pPlayer.getItemInHand(pUsedHand);
@@ -111,8 +127,12 @@ public abstract class AbstractOmnitrixItem extends Item implements GeoItem {
                     GeoItem.getOrAssignId(pwrCap.getInventory().getStackInSlot(0), (ServerLevel) pPlayer.level());
                     pLevel.playSound(null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), ModSounds.OMNITRIX_PUTTING.get(),
                             SoundSource.PLAYERS, 0.5f, 1.0f);
+
+                    if(pwrCap.getPower() == null){
+                        pwrCap.setPower(OmnitrixPower.id);
+                    }
                     ModNetworking.sendToClientTrackingAndSelf(new PowerCapS2CPacket(pwrCap.getInventory().serializeNBT(), pPlayer.getUUID(),
-                            pwrCap.isHudActive(), pwrCap.getHudSlot()), serverPlayer);
+                            pwrCap.isHudActive(), pwrCap.getHudSlot(), pwrCap.getPowerID()), serverPlayer);
 
                     //pPlayer.sendSystemMessage(Component.literal("Pois omnitrix"));
 

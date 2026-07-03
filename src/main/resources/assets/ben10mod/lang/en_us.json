@@ -19,6 +19,7 @@
   "sounds.ben10mod.omnitrix_deactivate": "Omnitrix Deactivation Sound",
   "sounds.ben10mod.omnitrix_dial": "Omnitrix Dial Sound",
   "sounds.ben10mod.omnitrix_active": "Omnitrix active beep Sound",
-  "sounds.ben10mod.omnitrix_putting": "Putting Omnitrix Sound"
-
+  "sounds.ben10mod.omnitrix_putting": "Putting Omnitrix Sound",
+  "sounds.ben10mod.omnitrix_transformation_fail": "Slapping Omnitrix",
+  "sounds.ben10mod.omnitrix_transformation": "Omnitrix Transformation Sound"
 }

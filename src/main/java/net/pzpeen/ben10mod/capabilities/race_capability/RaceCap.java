@@ -114,7 +114,12 @@ public class RaceCap {
     }
 
     public void saveNBT(CompoundTag nbt){
-        nbt.putString("alien_id", this.alienId.toString());
+        if(this.alienId != null){
+            nbt.putString("alien_id", this.alienId.toString());
+        }else{
+            nbt.putString("alien_id", RacesRegistries.humanRaceID.toString());
+        }
+
     }
     public void loadNBT(CompoundTag nbt){
         //this.setRace(new ResourceLocation(nbt.getString("alien_id")));

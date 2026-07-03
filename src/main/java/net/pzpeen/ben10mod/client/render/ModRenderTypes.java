@@ -1,12 +1,14 @@
 package net.pzpeen.ben10mod.client.render;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.renderer.RenderStateShard;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.inventory.InventoryMenu;
 
 import java.util.Map;
 
@@ -47,6 +49,31 @@ public abstract class ModRenderTypes extends RenderStateShard{
                     VertexFormat.Mode.QUADS, 256, false, false, compositeState);
         });
 
+
+    }
+
+
+
+    public static RenderType neonOnTop(ResourceLocation texture){
+        return CACHE.computeIfAbsent(texture, tex -> {
+            return RenderType.create("neon_on_top",
+                    DefaultVertexFormat.NEW_ENTITY,
+                    VertexFormat.Mode.QUADS,
+                    256,
+                    true,
+                    true,
+                    RenderType.CompositeState.builder()
+                            .setShaderState(RenderStateShard.RENDERTYPE_EYES_SHADER)
+                            .setTextureState(new RenderStateShard.TextureStateShard(
+                                    InventoryMenu.BLOCK_ATLAS, false, false))
+                            .setTransparencyState(RenderStateShard.ADDITIVE_TRANSPARENCY)
+                            .setDepthTestState(DepthTestStateShard.LEQUAL_DEPTH_TEST)
+                            .setLightmapState(CullStateShard.LIGHTMAP)
+                            .setCullState(NO_CULL)
+                            .setWriteMaskState(COLOR_DEPTH_WRITE)
+                            .createCompositeState(false));
+
+        });
 
     }
 

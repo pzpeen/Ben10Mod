@@ -15,7 +15,7 @@ public class RacesRegistries {
 
     public static void addAlienRegistry(ResourceLocation id, Supplier<? extends  AbstractRace> s){
         if(ALIEN_REGISTRIES.containsKey(id)){
-            System.out.println("WARNING! ALIEN ID '"+id+"' already exists!");
+            System.err.println("WARNING! ALIEN ID '"+id+"' already exists!");
             return;
         }
         ALIEN_REGISTRIES.put(id, s);
