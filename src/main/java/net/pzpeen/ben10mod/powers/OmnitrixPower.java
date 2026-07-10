@@ -1,7 +1,5 @@
 package net.pzpeen.ben10mod.powers;
 
-import com.eliotlash.mclib.math.functions.classic.Pow;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
@@ -10,9 +8,7 @@ import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
-import net.minecraft.client.renderer.block.model.BlockModel;
 import net.minecraft.client.renderer.texture.OverlayTexture;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.BakedModel;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
@@ -24,6 +20,7 @@ import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.client.model.data.ModelData;
 import net.pzpeen.ben10mod.Ben10Mod;
+import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCap;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
 import net.pzpeen.ben10mod.client.gui.hud.OmnitrixHud;
@@ -44,6 +41,7 @@ public class OmnitrixPower extends BasePower{
 
     @Override
     public void tick(Player player) {
+        /*
         player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(powerCap -> {
             //System.out.println("IS ON POWER TICK METHOD");
             this.slapAnimation.tick();
@@ -61,6 +59,37 @@ public class OmnitrixPower extends BasePower{
             }
 
         });
+
+         */
+
+        //System.out.println("IS ON POWER TICK METHOD");
+        this.slapAnimation.tick();
+        this.brightAnimation.tick();
+        if(slapAnimation.getRemainingTicks() == 0){
+            PowerCap powerCap = ((IBen10ModCapCache)player).ben10Mod$getCachedPowerCap();
+            powerCap.setHudActive(false);
+            if(player.level().isClientSide()){
+                Minecraft.getInstance().getSoundManager().stop(OmnitrixHud.omnitrixActiveSoundInstance);
+            }
+            //Call transform func
+            int slot = powerCap.getHudSlot() == 0 ? 9 : powerCap.getHudSlot() - 1;
+            AbstractOmnitrixItem.transform(powerCap.getInventory().getStackInSlot(0), player, slot);
+
+            /*
+            player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(powerCap -> {
+                powerCap.setHudActive(false);
+                if(player.level().isClientSide()){
+                    Minecraft.getInstance().getSoundManager().stop(OmnitrixHud.omnitrixActiveSoundInstance);
+                }
+                //Call transform func
+                int slot = powerCap.getHudSlot() == 0 ? 9 : powerCap.getHudSlot() - 1;
+                AbstractOmnitrixItem.transform(powerCap.getInventory().getStackInSlot(0), player, slot);
+
+            });
+
+             */
+
+        }
 
 
     }
@@ -107,6 +136,63 @@ public class OmnitrixPower extends BasePower{
     public static void processBrightAnim(RenderPlayerEvent.Pre event){
         Player player = event.getEntity();
 
+        if(((IBen10ModCapCache)player).ben10Mod$getCachedPowerCap().getPower() instanceof OmnitrixPower power){
+            int brightTick = power.getBrightAnimationTick();
+
+            //System.out.println("BRIGHT ANIM TICK ON CLIENT: "+ brightTick);
+
+            if(brightTick > 0){
+                PoseStack poseStack = event.getPoseStack();
+                MultiBufferSource bufferSource = event.getMultiBufferSource();
+                float time = player.tickCount + event.getPartialTick();
+
+                poseStack.pushPose();
+                poseStack.translate(0f, player.getBoundingBox().getYsize()/2f, 0f);
+                poseStack.mulPose(Axis.YP.rotationDegrees(time * 10f));
+
+                BlockRenderDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
+                BlockState colorBright = power.getBrightColor();
+                BakedModel colorBrightModel = blockRenderer.getBlockModel(colorBright);
+
+                ResourceLocation blockAtlas = InventoryMenu.BLOCK_ATLAS;
+                RenderType renderType = ModRenderTypes.neonOnTop(blockAtlas);
+                VertexConsumer buffer = bufferSource.getBuffer(renderType);
+
+                for(int i = 0; i < 3; i++){
+                    poseStack.pushPose();
+
+                    poseStack.mulPose(Axis.YP.rotationDegrees(i * 120f));
+                    //poseStack.translate(0d, 0d, 0d);
+                    poseStack.mulPose(Axis.XN.rotationDegrees(time * 15f));
+                    poseStack.mulPose(Axis.ZN.rotationDegrees(time * 20f));
+
+                    poseStack.scale(3f, 3f, 3f);
+                    poseStack.translate(-0.5f, -0.5f, -0.5f);
+
+                    blockRenderer.getModelRenderer().renderModel(
+                            poseStack.last(),
+                            buffer,
+                            colorBright,
+                            colorBrightModel,
+                            1.0f, 1.0f, 1.0f,
+                            LightTexture.FULL_BRIGHT,
+                            OverlayTexture.NO_OVERLAY,
+                            ModelData.EMPTY,
+                            renderType
+                    );
+
+                    poseStack.popPose();
+
+                }
+
+                poseStack.popPose();
+
+            }
+
+
+        }
+
+        /*
         player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(powerCap -> {
             if(powerCap.getPower() instanceof OmnitrixPower power){
                 int brightTick = power.getBrightAnimationTick();
@@ -167,11 +253,50 @@ public class OmnitrixPower extends BasePower{
 
         });
 
+         */
+
     }
 
     public static void process1stPersonBrightAnim(RenderHandEvent event){
         Player player = Minecraft.getInstance().player;
         if(player != null){
+            if(((IBen10ModCapCache)player).ben10Mod$getCachedPowerCap().getPower() instanceof OmnitrixPower power){
+                int brightTick = power.getBrightAnimationTick();
+                if(brightTick > 0){
+                    PoseStack poseStack = event.getPoseStack();
+                    MultiBufferSource bufferSource = event.getMultiBufferSource();
+
+                    poseStack.pushPose();
+
+                    poseStack.translate(-1.5f, -0.1f, -0.2f);
+                    poseStack.scale(3f, 3f, 3f);
+
+                    BlockRenderDispatcher blockRenderer = Minecraft.getInstance().getBlockRenderer();
+                    BlockState colorBright = power.getBrightColor();
+                    BakedModel colorBrightModel = blockRenderer.getBlockModel(colorBright);
+
+                    ResourceLocation blockAtlas = InventoryMenu.BLOCK_ATLAS;
+                    RenderType renderType = ModRenderTypes.neonOnTop(blockAtlas);
+                    VertexConsumer buffer = bufferSource.getBuffer(renderType);
+
+                    blockRenderer.getModelRenderer().renderModel(
+                            poseStack.last(),
+                            buffer,
+                            colorBright,
+                            colorBrightModel,
+                            1.0f, 1.0f, 1.0f,
+                            LightTexture.FULL_BRIGHT,
+                            OverlayTexture.NO_OVERLAY,
+                            ModelData.EMPTY,
+                            renderType
+                    );
+
+                    poseStack.popPose();
+
+                }
+            }
+
+            /*
             player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(powerCap -> {
                 if(powerCap.getPower() instanceof OmnitrixPower power){
                     int brightTick = power.getBrightAnimationTick();
@@ -212,6 +337,8 @@ public class OmnitrixPower extends BasePower{
                 }
 
             });
+
+             */
 
 
         }

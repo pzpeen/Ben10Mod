@@ -7,6 +7,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraftforge.network.NetworkEvent;
+import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
+import net.pzpeen.ben10mod.capabilities.race_capability.RaceCap;
 import net.pzpeen.ben10mod.capabilities.race_capability.RaceCapProvider;
 
 import java.util.UUID;
@@ -39,9 +41,10 @@ public class RaceCapS2CPacket {
                 Player player = level.getPlayerByUUID(this.playerUUID);
 
                 if(player != null){
-                    player.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
+                    RaceCap raceCap = ((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap();
+                    if(raceCap != null){
                         raceCap.setRace(this.alienID, player);
-                    });
+                    }
                 }
 
             }

@@ -5,8 +5,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.pzpeen.ben10mod.Ben10Mod;
+import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCap;
-import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
 import net.pzpeen.ben10mod.items.custom.omnitrix.AbstractOmnitrixItem;
 import net.pzpeen.ben10mod.items.custom.omnitrix.OmnitrixItem;
 import software.bernie.geckolib.cache.object.GeoBone;
@@ -52,6 +52,21 @@ public class OmnitrixModel extends GeoModel<OmnitrixItem> {
             assert Minecraft.getInstance().level != null;
             Player player = Minecraft.getInstance().level.getPlayerByUUID(playerUUID);
             if (player != null){
+                PowerCap powerCap = ((IBen10ModCapCache)player).ben10Mod$getCachedPowerCap();
+                if(powerCap != null){
+                    boolean isHudOn = powerCap.isHudActive();
+                    selectedSlot = powerCap.getHudSlot();
+                    selectedSlot = selectedSlot == 0 ? 9 : selectedSlot - 1;
+
+                    float angleToGo = isHudOn ? (float) Math.toRadians(selectedSlot * 36.0) : 0f;
+
+                    float newAngle = angleNow + (angleToGo - angleNow)*0.3f;
+
+                    this.angleOnPlayer.put(playerUUID, newAngle);
+                    dial.setRotX(newAngle);
+                }
+
+                /*
                 boolean isHudOn = player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).map(PowerCap::isHudActive).orElse(false);
                 selectedSlot = player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).map(PowerCap::getHudSlot).orElse(0);
                 selectedSlot = selectedSlot == 0 ? 9 : selectedSlot - 1;
@@ -62,6 +77,8 @@ public class OmnitrixModel extends GeoModel<OmnitrixItem> {
 
                 this.angleOnPlayer.put(playerUUID, newAngle);
                 dial.setRotX(newAngle);
+
+                 */
             }
 
         }

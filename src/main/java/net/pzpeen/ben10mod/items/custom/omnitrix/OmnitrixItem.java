@@ -10,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCap;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
 import net.pzpeen.ben10mod.client.render.power_items.omnitrix.OmnitrixModel;
@@ -106,7 +107,7 @@ public class OmnitrixItem extends AbstractOmnitrixItem {
                 assert Minecraft.getInstance().level != null;
                 Player player = Minecraft.getInstance().level.getPlayerByUUID(stack.getTag().getUUID(AbstractOmnitrixItem.playerUsingUUIDTag));
                 if (player == null) return PlayState.CONTINUE;
-                boolean isMenuOpen = player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).map(PowerCap::isHudActive).orElse(false);
+                boolean isMenuOpen = ((IBen10ModCapCache)player).ben10Mod$getCachedPowerCap().isHudActive();
 
                 if (isMenuOpen){
                     //System.out.println("Menu aberto");

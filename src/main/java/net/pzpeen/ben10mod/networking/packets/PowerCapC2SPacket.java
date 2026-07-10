@@ -7,7 +7,8 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
-import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
+import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
+import net.pzpeen.ben10mod.capabilities.power_capability.PowerCap;
 import net.pzpeen.ben10mod.networking.ModNetworking;
 
 import java.util.function.Supplier;
@@ -80,6 +81,25 @@ public class PowerCapC2SPacket {
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
             if (player != null){
+                PowerCap powerCap = ((IBen10ModCapCache)player).ben10Mod$getCachedPowerCap();
+                if(powerCap != null){
+                    powerCap.setHudActive(this.hudActive);
+                    powerCap.setHudSlot(this.hudSlot);
+                    if (this.soundEvent != null){
+                        //System.out.println("Tocando som.");
+                        player.serverLevel().playSound(null, player.getX(), player.getY(), player.getZ(), this.soundEvent,
+                                SoundSource.PLAYERS, 0.5f, 1.0f);
+                    }
+
+                    if(this.powerID != null){
+                        powerCap.setPower(this.powerID);
+                    }
+
+                    ModNetworking.sendToClientTrackingAndSelf(new PowerCapS2CPacket(powerCap.getInventory()
+                            .serializeNBT(), player.getUUID(), powerCap.isHudActive(), powerCap.getHudSlot()), player);
+                }
+
+                /*
                 player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(pwrCap -> {
                     pwrCap.setHudActive(this.hudActive);
                     pwrCap.setHudSlot(this.hudSlot);
@@ -96,6 +116,8 @@ public class PowerCapC2SPacket {
                     ModNetworking.sendToClientTrackingAndSelf(new PowerCapS2CPacket(pwrCap.getInventory()
                             .serializeNBT(), player.getUUID(), pwrCap.isHudActive(), pwrCap.getHudSlot()), player);
                 });
+
+                 */
             }
 
 

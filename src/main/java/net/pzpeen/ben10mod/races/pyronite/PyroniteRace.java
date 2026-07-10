@@ -2,7 +2,12 @@ package net.pzpeen.ben10mod.races.pyronite;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -11,6 +16,8 @@ import net.pzpeen.ben10mod.Ben10Mod;
 import net.pzpeen.ben10mod.effects.ModEffects;
 import net.pzpeen.ben10mod.races.AbstractRace;
 import net.pzpeen.ben10mod.races.AlienArmRenderer;
+import net.pzpeen.ben10mod.skills.AbstractSkill;
+import net.pzpeen.ben10mod.skills.fire.FireBallSkill;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -26,6 +33,8 @@ public class PyroniteRace extends AbstractRace {
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
     private static final PyroniteRenderer RENDERER = new PyroniteRenderer();
     private static final AlienArmRenderer ARM_RENDERER = new PyroniteArmRenderer(id);
+
+    private final FireBallSkill skill1 = new FireBallSkill();
 
     public PyroniteRace() {
         super();
@@ -52,7 +61,7 @@ public class PyroniteRace extends AbstractRace {
 
     @Override
     public float getBaseDamage() {
-        return 6.0f;
+        return 2.5f;
     }
 
     @Override
@@ -90,6 +99,38 @@ public class PyroniteRace extends AbstractRace {
     @Override
     public boolean cannotSwim() {
         return true;
+    }
+
+    @Override
+    public AbstractSkill getSkill1() {
+        return skill1;
+    }
+
+    @Override
+    public void useSkill1() {
+        if(!isOnWater()){
+            if(skill1.use(player)){
+                player.swing(InteractionHand.MAIN_HAND);
+            }
+        }else{
+            if(!player.level().isClientSide()){
+                ServerLevel serverLevel = (ServerLevel) player.level();
+                serverLevel.sendParticles(
+                        ParticleTypes.LARGE_SMOKE,
+                        player.getX(),
+                        player.getY() + 1,
+                        player.getZ(),
+                        15,
+                        0.2,
+                        0.2,
+                        0.2,
+                        0.05
+                );
+                serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        SoundEvents.LAVA_EXTINGUISH, SoundSource.PLAYERS, 1.0f, 1.0f);
+
+            }
+        }
     }
 
     @Override
@@ -175,7 +216,7 @@ public class PyroniteRace extends AbstractRace {
 
             if (e instanceof Player pPlayer){
 
-                if (pPlayer.swinging && !pPlayer.isSleeping()){
+                if ((pPlayer.swinging) && !pPlayer.isSleeping()){
                     return state.setAndContinue(swinging);
                 }
                 if (pPlayer.isUsingItem()){

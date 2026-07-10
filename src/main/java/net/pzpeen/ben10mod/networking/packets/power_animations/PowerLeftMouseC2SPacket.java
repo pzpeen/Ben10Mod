@@ -3,6 +3,8 @@ package net.pzpeen.ben10mod.networking.packets.power_animations;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
+import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
+import net.pzpeen.ben10mod.capabilities.power_capability.PowerCap;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
 import net.pzpeen.ben10mod.networking.ModNetworking;
 
@@ -23,6 +25,15 @@ public class PowerLeftMouseC2SPacket {
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
             if(player != null){
+                PowerCap powerCap = ((IBen10ModCapCache)player).ben10Mod$getCachedPowerCap();
+                if(powerCap != null){
+                    if(powerCap.getPower() != null){
+                        powerCap.getPower().onHudRightClick();
+                    }
+
+                    ModNetworking.sendToClientTrackingAndSelf(new PowerLeftMouseS2CPacket(player.getUUID()), player);
+                }
+                /*
                 player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(powerCap -> {
 
                     if(powerCap.getPower() != null){
@@ -31,6 +42,8 @@ public class PowerLeftMouseC2SPacket {
 
                     ModNetworking.sendToClientTrackingAndSelf(new PowerLeftMouseS2CPacket(player.getUUID()), player);
                 });
+
+                 */
 
             }
 

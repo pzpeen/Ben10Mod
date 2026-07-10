@@ -7,6 +7,8 @@ import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundSource;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.registries.ForgeRegistries;
+import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
+import net.pzpeen.ben10mod.capabilities.race_capability.RaceCap;
 import net.pzpeen.ben10mod.capabilities.race_capability.RaceCapProvider;
 import net.pzpeen.ben10mod.networking.ModNetworking;
 
@@ -52,9 +54,10 @@ public class RaceCapC2SPacket {
         context.enqueueWork(() -> {
             ServerPlayer player = context.getSender();
             if (player != null){
-                player.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
+                RaceCap raceCap = ((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap();
+                if(raceCap != null){
                     raceCap.setRace(this.alienID, player);
-                });
+                }
                 if(this.soundEvent != null){
                     player.serverLevel().playSound(null, player.getX(), player.getY(), player.getZ(),
                             this.soundEvent, SoundSource.PLAYERS, 1.0f, 1.0f);

@@ -5,8 +5,8 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
-import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
-import net.pzpeen.ben10mod.powers.OmnitrixPower;
+import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
+import net.pzpeen.ben10mod.capabilities.power_capability.PowerCap;
 
 import java.util.UUID;
 import java.util.function.Supplier;
@@ -33,13 +33,13 @@ public class PowerLeftMouseS2CPacket {
             if(level != null){
                 Player player = level.getPlayerByUUID(this.playerUUID);
                 if(player != null){
-                    player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(powerCap -> {
-
+                    PowerCap powerCap = ((IBen10ModCapCache)player).ben10Mod$getCachedPowerCap();
+                    if(powerCap != null){
                         if(powerCap.getPower() != null){
                             powerCap.getPower().onHudRightClick();
                         }
+                    }
 
-                    });
                 }
 
 

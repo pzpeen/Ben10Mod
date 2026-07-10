@@ -7,6 +7,7 @@ import java.util.function.Supplier;
 
 public class PowerRegistries {
     private static final HashMap<ResourceLocation, Supplier<? extends BasePower>> POWER_REGISTRIES = new HashMap<>();
+    public static final ResourceLocation noPowerID = ResourceLocation.fromNamespaceAndPath("ben10mod", "no_power");
 
     public static void addPower(ResourceLocation id, Supplier<? extends BasePower> s){
         if(POWER_REGISTRIES.containsKey(id)){
@@ -18,7 +19,7 @@ public class PowerRegistries {
     }
 
     public static BasePower pickPower(ResourceLocation id){
-        if(id == null) return null;
+        if(id == null || id.toString().equals(noPowerID.toString())) return null;
         Supplier<? extends BasePower> s = POWER_REGISTRIES.get(id);
         if(s != null){
             return s.get();

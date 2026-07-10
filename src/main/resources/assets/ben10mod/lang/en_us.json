@@ -13,7 +13,7 @@
   "key.categories.ben10mod.ben10": "Ben 10",
   "key.keybinds.ben10mod.power_menu": "Power Menu",
   "key.keybinds.ben10mod.activate_power": "Activate Power",
-
+  "key.keybinds.ben10mod.skill_1": "Skill 1",
 
   "sounds.ben10mod.omnitrix_activate": "Omnitrix Activation Sound",
   "sounds.ben10mod.omnitrix_deactivate": "Omnitrix Deactivation Sound",
@@ -22,4 +22,5 @@
   "sounds.ben10mod.omnitrix_putting": "Putting Omnitrix Sound",
   "sounds.ben10mod.omnitrix_transformation_fail": "Slapping Omnitrix",
   "sounds.ben10mod.omnitrix_transformation": "Omnitrix Transformation Sound"
+
 }

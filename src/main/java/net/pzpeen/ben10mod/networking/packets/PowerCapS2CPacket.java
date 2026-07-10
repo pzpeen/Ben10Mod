@@ -8,8 +8,11 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraftforge.network.NetworkEvent;
-import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
+import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
+import net.pzpeen.ben10mod.capabilities.power_capability.PowerCap;
+import net.pzpeen.ben10mod.powers.PowerRegistries;
 
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Supplier;
 
@@ -65,8 +68,8 @@ public class PowerCapS2CPacket {
         buf.writeInt(this.hudSlot);
         buf.writeBoolean(this.changePowerID);
         if(this.changePowerID){
-            assert this.powerID != null;
-            buf.writeResourceLocation(this.powerID);
+            buf.writeResourceLocation(Objects.requireNonNullElse(powerID, PowerRegistries.noPowerID));
+
         }
     }
 
@@ -79,6 +82,16 @@ public class PowerCapS2CPacket {
                 Entity player = level.getPlayerByUUID(this.playerId);
 
                 if(player instanceof Player playerToRender){
+                    PowerCap powerCap = ((IBen10ModCapCache)playerToRender).ben10Mod$getCachedPowerCap();
+                    if(powerCap != null){
+                        powerCap.getInventory().deserializeNBT(this.inventoryNBT);
+                        powerCap.setHudActive(this.hudActive);
+                        powerCap.setHudSlot(this.hudSlot);
+                        if(this.powerID != null){
+                            powerCap.setPower(this.powerID);
+                        }
+                    }
+                    /*
                     playerToRender.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent((powerCap) -> {
                         powerCap.getInventory().deserializeNBT(this.inventoryNBT);
                         powerCap.setHudActive(this.hudActive);
@@ -87,6 +100,8 @@ public class PowerCapS2CPacket {
                             powerCap.setPower(this.powerID);
                         }
                     });
+
+                     */
                 }
             }
         });

@@ -9,6 +9,8 @@ import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
+import net.pzpeen.ben10mod.capabilities.power_capability.PowerCap;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
 import net.pzpeen.ben10mod.items.custom.dna_bank.AbstractDnaBankItem;
 import net.pzpeen.ben10mod.items.custom.omnitrix.AbstractOmnitrixItem;
@@ -58,6 +60,22 @@ public class OmnitrixRenderer extends GeoItemRenderer<OmnitrixItem> {
             LocalPlayer player = Minecraft.getInstance().player;
 
             if(player != null){
+                PowerCap powerCap = ((IBen10ModCapCache)player).ben10Mod$getCachedPowerCap();
+                if(powerCap != null){
+                    if(!powerCap.isHudActive()){
+                        setSelectedAlien(null);
+                    }else{
+                        DnaBank dnaBank = AbstractDnaBankItem.getDnaBank(AbstractOmnitrixItem.getDnaBankItem(stack));
+                        Playlist<ResourceLocation> selectedPlaylist = dnaBank.getPlaylist(AbstractOmnitrixItem.getSelectedPlaylist(stack));
+                        //System.out.println("hudSlotSelected: "+pwrCap.getHudSlot());
+                        //System.out.println("AlienOnPlaylistInHudPosition:"+ selectedPlaylist.get(pwrCap.getHudSlot()));
+                        int convertedSlot = powerCap.getHudSlot() == 0 ? 9 : powerCap.getHudSlot() - 1;
+                        setSelectedAlien(selectedPlaylist.get(convertedSlot));
+                    }
+
+                }
+
+                /*
                 player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(pwrCap -> {
                     if(!pwrCap.isHudActive()){
                         setSelectedAlien(null);
@@ -71,6 +89,8 @@ public class OmnitrixRenderer extends GeoItemRenderer<OmnitrixItem> {
                     }
 
                 });
+
+                 */
             }
 
         }

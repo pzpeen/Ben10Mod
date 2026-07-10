@@ -11,6 +11,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeMap;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
 import net.minecraft.world.entity.player.Player;
+import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
+import net.pzpeen.ben10mod.capabilities.race_capability.RaceCap;
 import net.pzpeen.ben10mod.capabilities.race_capability.RaceCapProvider;
 import net.pzpeen.ben10mod.effects.ModEffects;
 
@@ -43,6 +45,39 @@ public class WetEffect extends MobEffect {
     @Override
     public void addAttributeModifiers(LivingEntity pLivingEntity, AttributeMap pAttributeMap, int pAmplifier) {
         if(pLivingEntity instanceof Player player){
+            RaceCap raceCap = ((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap();
+            if(raceCap != null){
+                if(raceCap.getRace() != null){
+                    if(raceCap.getRace().isWaterWeak()){
+                        var damageAtrInstance = pAttributeMap.getInstance(Attributes.ATTACK_DAMAGE);
+                        if(damageAtrInstance != null && !damageAtrInstance.hasModifier(this.debuffDamageModifier)){
+                            damageAtrInstance.addTransientModifier(this.debuffDamageModifier);
+                        }
+
+                        var armorAtrInstance = pAttributeMap.getInstance(Attributes.ARMOR);
+                        if(armorAtrInstance != null && !armorAtrInstance.hasModifier(this.debuffArmorModifier)){
+                            armorAtrInstance.addTransientModifier(this.debuffArmorModifier);
+                        }
+
+
+                    }else if(raceCap.getRace().isWaterStrong()){
+                        var damageAtrInstance = pAttributeMap.getInstance(Attributes.ATTACK_DAMAGE);
+                        if(damageAtrInstance != null && !damageAtrInstance.hasModifier(this.buffDamageModifier)){
+                            damageAtrInstance.addTransientModifier(this.buffDamageModifier);
+                        }
+
+                        var armorAtrInstance = pAttributeMap.getInstance(Attributes.ARMOR);
+                        if(armorAtrInstance != null && !armorAtrInstance.hasModifier(this.buffArmorModifier)){
+                            armorAtrInstance.addTransientModifier(this.buffArmorModifier);
+                        }
+
+                    }
+
+                }
+
+            }
+
+            /*
             player.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
                 if(raceCap.getRace() != null){
                     if(raceCap.getRace().isWaterWeak()){
@@ -74,6 +109,8 @@ public class WetEffect extends MobEffect {
 
             });
 
+             */
+
         }
         super.addAttributeModifiers(pLivingEntity, pAttributeMap, pAmplifier);
     }
@@ -91,6 +128,32 @@ public class WetEffect extends MobEffect {
             armorAtrInstance.removeModifier(this.buffDamageModifier);
         }
         if(pLivingEntity instanceof Player player){
+            RaceCap raceCap = ((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap();
+            if(raceCap != null){
+                if(raceCap.getRace() != null && raceCap.getRace().isWaterWeak()){
+                    if(!player.isInWater()){
+                        if(player.level() instanceof ServerLevel serverLevel){
+                            serverLevel.sendParticles(
+                                    ParticleTypes.FLAME,
+                                    player.getX(),
+                                    player.getY() + 1,
+                                    player.getZ(),
+                                    15,
+                                    0.2,
+                                    0.2,
+                                    0.2,
+                                    0.1
+                            );
+                            serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
+                                    SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 1.0f, 1.0f);
+
+                        }
+                    }
+                }
+
+            }
+
+            /*
             player.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
                 if(raceCap.getRace() != null && raceCap.getRace().isWaterWeak()){
                     if(!player.isInWater()){
@@ -114,6 +177,8 @@ public class WetEffect extends MobEffect {
                 }
 
             });
+
+             */
 
         }
 

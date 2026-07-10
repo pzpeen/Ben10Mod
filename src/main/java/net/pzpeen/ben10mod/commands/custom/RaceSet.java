@@ -13,6 +13,8 @@ import net.minecraft.commands.arguments.EntityArgument;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
+import net.pzpeen.ben10mod.capabilities.race_capability.RaceCap;
 import net.pzpeen.ben10mod.capabilities.race_capability.RaceCapProvider;
 import net.pzpeen.ben10mod.networking.ModNetworking;
 import net.pzpeen.ben10mod.networking.packets.RaceCapS2CPacket;
@@ -42,9 +44,16 @@ public class RaceSet {
             ResourceLocation raceID = ResourceLocation.parse(StringArgumentType.getString(commandContext, "raceId"));
             //ResourceLocation raceID = new ResourceLocation(StringArgumentType.getString(commandContext, "raceId"));
 
+            RaceCap raceCap = ((IBen10ModCapCache)targetPlayer).ben10Mod$getCachedRaceCap();
+            if(raceCap != null){
+                raceCap.setRace(raceID, targetPlayer, true);
+            }
+            /*
             targetPlayer.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
                 raceCap.setRace(raceID, targetPlayer, true);
             });
+
+             */
 
             ModNetworking.sendToClientTrackingAndSelf(new RaceCapS2CPacket(raceID, targetPlayer.getUUID()), commandContext.getSource().getPlayer());
 

@@ -71,6 +71,17 @@ public class ModNetworking {
                 .consumerMainThread(PowerLeftMouseC2SPacket::handle)
                 .add();
 
+        INSTANCE.messageBuilder(UseSkillS2CPacket.class, id(), NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(UseSkillS2CPacket::encode)
+                .decoder(UseSkillS2CPacket::decode)
+                .consumerMainThread(UseSkillS2CPacket::handle)
+                .add();
+        INSTANCE.messageBuilder(UseSkillC2SPacket.class, id(), NetworkDirection.PLAY_TO_SERVER)
+                .encoder(UseSkillC2SPacket::encode)
+                .decoder(UseSkillC2SPacket::decode)
+                .consumerMainThread(UseSkillC2SPacket::handle)
+                .add();
+
     }
 
     public static <MSG> void sendToServer(MSG msg){

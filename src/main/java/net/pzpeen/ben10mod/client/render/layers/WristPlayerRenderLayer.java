@@ -12,6 +12,8 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
+import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
+import net.pzpeen.ben10mod.capabilities.power_capability.PowerCap;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
 import net.pzpeen.ben10mod.client.render.power_items.omnitrix.OmnitrixRenderer;
 import net.pzpeen.ben10mod.items.custom.dna_bank.AbstractDnaBankItem;
@@ -30,6 +32,50 @@ public class WristPlayerRenderLayer extends RenderLayer<AbstractClientPlayer, Pl
     @Override
     public void render(PoseStack pPoseStack, MultiBufferSource pBuffer, int pPackedLight, AbstractClientPlayer pLivingEntity, float pLimbSwing, float pLimbSwingAmount, float pPartialTick, float pAgeInTicks, float pNetHeadYaw, float pHeadPitch) {
 
+        PowerCap powerCap = ((IBen10ModCapCache)pLivingEntity).ben10Mod$getCachedPowerCap();
+        if(powerCap != null){
+            //System.out.println("Cliente, menu aberto: " + pwrCap.isHudActive());
+
+            if(powerCap.getInventory().getStackInSlot(0).getItem() instanceof OmnitrixItem){
+                ItemStack stack = powerCap.getInventory().getStackInSlot(0);
+
+                pPoseStack.pushPose();
+
+                this.getParentModel().leftArm.translateAndRotate(pPoseStack);
+
+                BlockEntityWithoutLevelRenderer customRenderer = IClientItemExtensions.of(stack).getCustomRenderer();
+
+                if(customRenderer instanceof OmnitrixRenderer){
+                    if(!powerCap.isHudActive()){
+                        ((OmnitrixRenderer) customRenderer).setSelectedAlien(null);
+                    }else{
+                        DnaBank dnaBank = AbstractDnaBankItem.getDnaBank(AbstractOmnitrixItem.getDnaBankItem(stack));
+                        Playlist<ResourceLocation> selectedPlaylist = dnaBank.getPlaylist(AbstractOmnitrixItem.getSelectedPlaylist(stack));
+                        //System.out.println("hudSlotSelected: "+pwrCap.getHudSlot());
+                        //System.out.println("AlienOnPlaylistInHudPosition:"+ selectedPlaylist.get(pwrCap.getHudSlot()));
+                        int convertedSlot = powerCap.getHudSlot() == 0 ? 9 : powerCap.getHudSlot() - 1;
+                        ((OmnitrixRenderer) customRenderer).setSelectedAlien(selectedPlaylist.get(convertedSlot));
+                    }
+                }
+
+                if(customRenderer instanceof GeoItemRenderer<?> geoItemRenderer){
+                    geoItemRenderer.renderByItem(
+                            stack,
+                            ItemDisplayContext.NONE,
+                            pPoseStack,
+                            pBuffer,
+                            pPackedLight,
+                            OverlayTexture.NO_OVERLAY
+                    );
+                }
+
+
+                pPoseStack.popPose();
+
+            }
+        }
+
+        /*
         pLivingEntity.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent((pwrCap) -> {
             //System.out.println("Cliente, menu aberto: " + pwrCap.isHudActive());
 
@@ -72,5 +118,7 @@ public class WristPlayerRenderLayer extends RenderLayer<AbstractClientPlayer, Pl
             }
 
         });
+
+         */
     }
 }

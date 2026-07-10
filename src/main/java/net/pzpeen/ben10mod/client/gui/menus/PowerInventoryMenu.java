@@ -10,6 +10,8 @@ import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
+import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
+import net.pzpeen.ben10mod.capabilities.power_capability.PowerCap;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
 import net.pzpeen.ben10mod.client.gui.ModMenus;
 import net.pzpeen.ben10mod.client.gui.hud.OmnitrixHud;
@@ -40,12 +42,8 @@ public class PowerInventoryMenu extends AbstractContainerMenu {
         this.addSlot(new SlotItemHandler(this.pwrSlot, 0, 80, 18){
             @Override
             public boolean mayPlace(@NotNull ItemStack stack) {
-                AtomicReference<BasePower> powerReference = new AtomicReference<>();
-                player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(powerCap -> {
-                    powerReference.set(powerCap.getPower());
-
-                });
-                BasePower power = powerReference.get();
+                PowerCap powerCap = ((IBen10ModCapCache)player).ben10Mod$getCachedPowerCap();
+                BasePower power = powerCap.getPower();
                 if(power == null){
                     return stack.is(ModTags.Items.POWER_ITEMS);
                 }else if(power instanceof OmnitrixPower){
@@ -62,6 +60,25 @@ public class PowerInventoryMenu extends AbstractContainerMenu {
 
                 if(!player.level().isClientSide()){
                     //Changing menu state and hud arms animation progress
+                    PowerCap powerCap = ((IBen10ModCapCache)player).ben10Mod$getCachedPowerCap();
+                    powerCap.setHudActive(false);
+
+                    OmnitrixHud.menuAnimProgress = 0.0f;
+                    OmnitrixHud.lastMenuAnimProgress = 0.0f;
+                    if(!powerCap.getInventory().getStackInSlot(0).isEmpty()){
+                        //System.out.println("Colocando uuid na item stack");
+                        powerCap.getInventory().getStackInSlot(0).getOrCreateTag().putUUID("playerUsingUUID", player.getUUID());
+                        GeoItem.getOrAssignId(powerCap.getInventory().getStackInSlot(0), (ServerLevel) player.level());
+                        if(powerCap.getInventory().getStackInSlot(0).is(ModItems.OMNITRIX.get())){
+                            powerCap.setPower(OmnitrixPower.id);
+                        }
+                    }
+
+                    ModNetworking.sendToClientTrackingAndSelf(
+                            new PowerCapS2CPacket(powerCap.getInventory().serializeNBT(), player.getUUID(),
+                                    powerCap.isHudActive(), powerCap.getHudSlot(), powerCap.getPowerID()), (ServerPlayer) player);
+
+                    /*
                     player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent((pwrCap) -> {
                         pwrCap.setHudActive(false);
 
@@ -81,6 +98,8 @@ public class PowerInventoryMenu extends AbstractContainerMenu {
                                         pwrCap.isHudActive(), pwrCap.getHudSlot(), pwrCap.getPowerID()), (ServerPlayer) player);
 
                     });
+
+                     */
 
                 }
 

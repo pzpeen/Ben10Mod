@@ -12,9 +12,9 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
-import net.pzpeen.ben10mod.Ben10Mod;
 import net.pzpeen.ben10mod.client.gui.hud.OmnitrixHud;
 import net.pzpeen.ben10mod.effects.ModEffects;
+import net.pzpeen.ben10mod.skills.AbstractSkill;
 import net.pzpeen.ben10mod.utils.ModClientUtilities;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.renderer.GeoRenderer;
@@ -43,6 +43,12 @@ public abstract class AbstractRace implements GeoAnimatable {
             return ResourceLocation.fromNamespaceAndPath(alienId.getNamespace(), "textures/races/"+alienId.getPath()+"/silhouette.png");
         }
         return null;
+    }
+
+    public void tick(){
+        if(getSkill1() != null){
+            getSkill1().getCooldown().tick();
+        }
     }
 
     public float getCustomWidth(){return 0.6f;}
@@ -93,6 +99,18 @@ public abstract class AbstractRace implements GeoAnimatable {
     public abstract GeoRenderer<? extends AbstractRace> getRenderer();
 
     public abstract void render(PoseStack poseStack, Player player, MultiBufferSource bufferSource, int packedLight, float partialTick);
+
+    public abstract AbstractSkill getSkill1();
+
+    public void useSkill1(){}
+
+    public void useSkill2(){}
+
+    public void useSkill3(){}
+
+    public void useSkill4(){}
+
+    public void useSkill5(){}
 
     public void renderAlienArm(RenderHandEvent event){
         Player player = Minecraft.getInstance().player;

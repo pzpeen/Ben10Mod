@@ -1,6 +1,5 @@
 package net.pzpeen.ben10mod.events;
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.tags.DamageTypeTags;
@@ -18,11 +17,11 @@ import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.pzpeen.ben10mod.Ben10Mod;
+import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
+import net.pzpeen.ben10mod.capabilities.power_capability.PowerCap;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
+import net.pzpeen.ben10mod.capabilities.race_capability.RaceCap;
 import net.pzpeen.ben10mod.capabilities.race_capability.RaceCapProvider;
-import net.pzpeen.ben10mod.client.gui.hud.OmnitrixHud;
-import net.pzpeen.ben10mod.items.ModItems;
-import net.pzpeen.ben10mod.items.custom.omnitrix.AbstractOmnitrixItem;
 import net.pzpeen.ben10mod.networking.ModNetworking;
 import net.pzpeen.ben10mod.networking.packets.PowerCapS2CPacket;
 import net.pzpeen.ben10mod.networking.packets.RaceCapS2CPacket;
@@ -56,9 +55,11 @@ public class ModEvents {
 
             //Keeping PowerCap on server
             event.getOriginal().getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(oldCap ->
-                    event.getEntity().getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(newCap ->
-                        newCap.getInventory().deserializeNBT(oldCap.getInventory().serializeNBT())
+                    event.getEntity().getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(newCap -> {
+                        newCap.getInventory().deserializeNBT(oldCap.getInventory().serializeNBT());
+                        newCap.setPower(oldCap.getPowerID());
 
+                    }
             ));
 
             //Keeping RaceCap on server
@@ -70,6 +71,18 @@ public class ModEvents {
         @SubscribeEvent
         public static void onPlayerChangeDimension(PlayerEvent.PlayerChangedDimensionEvent event){
             if(!event.getEntity().level().isClientSide() && event.getEntity() instanceof ServerPlayer player){
+
+                PowerCap powerCap = ((IBen10ModCapCache)player).ben10Mod$getCachedPowerCap();
+                if(powerCap != null){
+                    ModNetworking.sendToClientTrackingAndSelf(new PowerCapS2CPacket(powerCap.getInventory().serializeNBT(),
+                            event.getEntity().getUUID(), powerCap.isHudActive(), powerCap.getHudSlot(), powerCap.getPowerID()), player);
+                }
+                RaceCap raceCap = ((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap();
+                if(raceCap != null){
+                    ModNetworking.sendToClientTrackingAndSelf(new RaceCapS2CPacket(raceCap.getRaceId(), player.getUUID()), player);
+                }
+
+                /*
                 player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(powerCap -> {
                     ModNetworking.sendToClientTrackingAndSelf(new PowerCapS2CPacket(powerCap.getInventory().serializeNBT(),
                             event.getEntity().getUUID(), powerCap.isHudActive(), powerCap.getHudSlot(), powerCap.getPowerID()), player);
@@ -79,6 +92,8 @@ public class ModEvents {
                     ModNetworking.sendToClientTrackingAndSelf(new RaceCapS2CPacket(raceCap.getRaceId(), player.getUUID()), player);
                 });
 
+                 */
+
             }
 
         }
@@ -87,16 +102,31 @@ public class ModEvents {
         public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event){
             if(!event.getEntity().level().isClientSide()){
                 //Keeping PowerCap
+                PowerCap powerCap = ((IBen10ModCapCache)event.getEntity()).ben10Mod$getCachedPowerCap();
+                if(powerCap != null){
+                    ModNetworking.sendToClientTrackingAndSelf(new PowerCapS2CPacket(powerCap.getInventory().serializeNBT(), event.getEntity().getUUID(),
+                            powerCap.isHudActive(), powerCap.getHudSlot(), powerCap.getPowerID()), (ServerPlayer) event.getEntity());
+
+                }
+                //Keeping RaceCap
+                RaceCap raceCap = ((IBen10ModCapCache)event.getEntity()).ben10Mod$getCachedRaceCap();
+                if(raceCap != null){
+                    ModNetworking.sendToClientTrackingAndSelf(new RaceCapS2CPacket(raceCap.getRaceId(), event.getEntity().getUUID()),
+                            (ServerPlayer) event.getEntity());
+                }
+
+                /*
                 event.getEntity().getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(pwrCap -> {
                     ModNetworking.sendToClientTrackingAndSelf(new PowerCapS2CPacket(pwrCap.getInventory().serializeNBT(), event.getEntity().getUUID(),
                             pwrCap.isHudActive(), pwrCap.getHudSlot(), pwrCap.getPowerID()), (ServerPlayer) event.getEntity());
                 });
 
-                //Keeping RaceCap
                 event.getEntity().getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
                     ModNetworking.sendToClientTrackingAndSelf(new RaceCapS2CPacket(raceCap.getRaceId(), event.getEntity().getUUID()),
                             (ServerPlayer) event.getEntity());
                 });
+
+                 */
             }
         }
 
@@ -104,16 +134,29 @@ public class ModEvents {
         public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event){
             if(!event.getEntity().level().isClientSide()){
                 //Keeping PowerCap
+                PowerCap powerCap = ((IBen10ModCapCache)event.getEntity()).ben10Mod$getCachedPowerCap();
+                if(powerCap != null){
+                    ModNetworking.sendToClientTrackingAndSelf(new PowerCapS2CPacket(powerCap.getInventory().serializeNBT(), event.getEntity().getUUID(),
+                            powerCap.isHudActive(), powerCap.getHudSlot(), powerCap.getPowerID()), (ServerPlayer) event.getEntity());
+                }
+                //Keeping RaceCap
+                RaceCap raceCap = ((IBen10ModCapCache)event.getEntity()).ben10Mod$getCachedRaceCap();
+                if(raceCap != null){
+                    ModNetworking.sendToClientTrackingAndSelf(new RaceCapS2CPacket(raceCap.getRaceId(), event.getEntity().getUUID()),
+                            (ServerPlayer) event.getEntity());
+                }
+
+                /*
                 event.getEntity().getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(pwrCap -> {
                     ModNetworking.sendToClientTrackingAndSelf(new PowerCapS2CPacket(pwrCap.getInventory().serializeNBT(), event.getEntity().getUUID(),
                             pwrCap.isHudActive(), pwrCap.getHudSlot(), pwrCap.getPowerID()), (ServerPlayer) event.getEntity());
                 });
 
-                //Keeping RaceCap
                 event.getEntity().getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
                     ModNetworking.sendToClientTrackingAndSelf(new RaceCapS2CPacket(raceCap.getRaceId(), event.getEntity().getUUID()),
                             (ServerPlayer) event.getEntity());
                 });
+                 */
             }
         }
 
@@ -121,6 +164,24 @@ public class ModEvents {
         public static void onPlayerTracking(PlayerEvent.StartTracking event){
             if(event.getTarget() instanceof  Player targetPlayer){
                 //Tracking PowerCap
+                PowerCap powerCap = ((IBen10ModCapCache)targetPlayer).ben10Mod$getCachedPowerCap();
+                if(powerCap != null){
+                    ModNetworking.sendToClientTrackingAndSelf(
+                            new PowerCapS2CPacket(powerCap.getInventory().serializeNBT(), targetPlayer.getUUID(),
+                                    powerCap.isHudActive(), powerCap.getHudSlot(), powerCap.getPowerID()),
+                            (ServerPlayer) event.getEntity());
+
+                }
+                //Tracking RaceCap
+                RaceCap raceCap = ((IBen10ModCapCache)targetPlayer).ben10Mod$getCachedRaceCap();
+                if(raceCap != null){
+                    ModNetworking.sendToClientTrackingAndSelf(
+                            new RaceCapS2CPacket(raceCap.getRaceId(), targetPlayer.getUUID()),
+                            (ServerPlayer) event.getEntity());
+
+                }
+
+                /*
                 targetPlayer.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent((pwrCap) -> {
                     ModNetworking.sendToClientTrackingAndSelf(
                             new PowerCapS2CPacket(pwrCap.getInventory().serializeNBT(), targetPlayer.getUUID(),
@@ -128,13 +189,14 @@ public class ModEvents {
                             (ServerPlayer) event.getEntity());
                 });
 
-                //Tracking RaceCap
                 targetPlayer.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
                     ModNetworking.sendToClientTrackingAndSelf(
                             new RaceCapS2CPacket(raceCap.getRaceId(), targetPlayer.getUUID()),
                             (ServerPlayer) event.getEntity()
                     );
                 });
+
+                 */
 
             }
 
@@ -147,6 +209,7 @@ public class ModEvents {
         public static void onEquipmentChange(LivingEquipmentChangeEvent event){
             if(event.getEntity() instanceof Player player){
                 if(event.getSlot().isArmor()){
+                    /*
                     player.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
                         if(raceCap.getRace() != null){
                             ItemStack armor = event.getTo();
@@ -160,8 +223,23 @@ public class ModEvents {
                             }
                         }
                     });
+
+                     */
+                    if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace() != null){
+                        ItemStack armor = event.getTo();
+
+                        if(!armor.isEmpty()){
+                            player.setItemSlot(event.getSlot(), ItemStack.EMPTY);
+
+                            if(!player.getInventory().add(armor)){
+                                player.drop(armor, false);
+                            }
+                        }
+
+                    }
                 //Blocking Shield if transformed
                 }else if(event.getSlot() == EquipmentSlot.OFFHAND){
+                    /*
                     player.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
                         if(raceCap.getRace() != null){
                             ItemStack toOffHandItem = event.getTo();
@@ -174,6 +252,19 @@ public class ModEvents {
                             }
                         }
                     });
+
+                     */
+                    if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace() != null){
+                        ItemStack toOffHandItem = event.getTo();
+                        if(toOffHandItem.getItem() instanceof ShieldItem){
+                            player.setItemSlot(EquipmentSlot.OFFHAND, ItemStack.EMPTY);
+
+                            if(!player.getInventory().add(toOffHandItem)){
+                                player.drop(toOffHandItem, false);
+                            }
+                        }
+                    }
+
                 }
             }
         }
@@ -187,6 +278,7 @@ public class ModEvents {
             if(!(event.getEntity() instanceof Player player)) return;
 
             if(event.getSource().is(DamageTypeTags.IS_FIRE)){
+                /*
                 player.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
                     if (raceCap.getRace() != null){
                         if(raceCap.getRace().isFireResistent()){
@@ -194,6 +286,14 @@ public class ModEvents {
                         }
                     }
                 });
+
+                 */
+                if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace() != null){
+                    if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace().isFireResistent()){
+                        event.cancel();
+                    }
+                }
+
             }
 
         }
@@ -202,22 +302,38 @@ public class ModEvents {
         public static void onLivingHurt(LivingHurtEvent event){
             if (!(event.getSource().getEntity() instanceof Player player)) return;
 
+            /*
             player.getCapability(RaceCapProvider.PLAYER_RACE_CAP).ifPresent(raceCap -> {
                 if(raceCap.getRace() != null && player.getMainHandItem().isEmpty()){
                     raceCap.getRace().doBareHandHit(event);
                 }
             });
+
+             */
+
+            if(!event.getSource().is(DamageTypeTags.IS_PROJECTILE)){
+                if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace() != null && player.getMainHandItem().isEmpty()){
+                    ((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace().doBareHandHit(event);
+                }
+            }
         }
 
 
         @SubscribeEvent
         public static void onPlayerTick(TickEvent.PlayerTickEvent event){
             if(event.phase == TickEvent.Phase.END){
+                /*
                 event.player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(powerCap -> {
                     if(powerCap.getPower() != null){
                         powerCap.getPower().tick(event.player);
                     }
                 });
+
+                 */
+
+                if(((IBen10ModCapCache)event.player).ben10Mod$getCachedPowerCap().getPower() != null){
+                    ((IBen10ModCapCache)event.player).ben10Mod$getCachedPowerCap().getPower().tick(event.player);
+                }
             }
         }
 

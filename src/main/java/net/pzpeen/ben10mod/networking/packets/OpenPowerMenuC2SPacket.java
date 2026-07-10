@@ -6,6 +6,7 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.SimpleMenuProvider;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.NetworkHooks;
+import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
 import net.pzpeen.ben10mod.client.gui.menus.PowerInventoryMenu;
 
@@ -26,8 +27,8 @@ public class OpenPowerMenuC2SPacket {
                 NetworkHooks.openScreen(player,
                         new SimpleMenuProvider((id, inv, p) ->
                                 new PowerInventoryMenu(id, inv,
-                                        player.getCapability(PowerCapProvider.PLAYER_POWER_CAP)
-                                                .orElseThrow(IllegalStateException::new).getInventory()), Component.literal("Power Inventory")));
+                                        ((IBen10ModCapCache)player).ben10Mod$getCachedPowerCap().getInventory()),
+                                Component.literal("Power Inventory")));
             }
         });
         return true;

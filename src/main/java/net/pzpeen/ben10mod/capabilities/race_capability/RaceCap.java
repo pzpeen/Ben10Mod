@@ -55,23 +55,22 @@ public class RaceCap {
         }
 
         //Handling Attributes
+        AttributeInstance baseAttackDamage = this.player.getAttribute(Attributes.ATTACK_DAMAGE);
+        AttributeInstance baseArmor = this.player.getAttribute(Attributes.ARMOR);
         if(this.race != null){
             //Setting the attributes if not human
-            AttributeInstance baseAttackDamage = this.player.getAttribute(Attributes.ATTACK_DAMAGE);
             if(baseAttackDamage != null){
                 baseAttackDamage.setBaseValue(this.race.getBaseDamage());
             }
-            AttributeInstance baseArmor = this.player.getAttribute(Attributes.ARMOR);
+
             if(baseArmor != null){
                 baseArmor.setBaseValue(this.race.getBaseArmor());
             }
         }else{
             //Returning the attribute to original values if human
-            AttributeInstance baseAttackDamage = this.player.getAttribute(Attributes.ATTACK_DAMAGE);
             if(baseAttackDamage != null){
                 baseAttackDamage.setBaseValue(1.0f);
             }
-            AttributeInstance baseArmor = this.player.getAttribute(Attributes.ARMOR);
             if(baseArmor != null){
                 baseArmor.setBaseValue(0.0f);
             }

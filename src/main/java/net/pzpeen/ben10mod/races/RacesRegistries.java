@@ -22,7 +22,7 @@ public class RacesRegistries {
     }
 
     public static AbstractRace pickRace(ResourceLocation id, Player player){
-        if(id == null || id.toString().equals(humanRaceID.toString())) return null; //Id null means that is human!
+        if(id == null || id.toString().equals(humanRaceID.toString())) return null; //ID null means that is human!
         Supplier<? extends AbstractRace> s = ALIEN_REGISTRIES.get(id);
         if(s != null){
             AbstractRace race = s.get();

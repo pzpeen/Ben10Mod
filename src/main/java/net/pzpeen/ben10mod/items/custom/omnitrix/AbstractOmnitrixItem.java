@@ -11,6 +11,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
+import net.pzpeen.ben10mod.capabilities.power_capability.PowerCap;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
 import net.pzpeen.ben10mod.items.custom.dna_bank.AbstractDnaBankItem;
 import net.pzpeen.ben10mod.items.custom.omni_core.AbstractOmniCoreItem;
@@ -119,6 +121,30 @@ public abstract class AbstractOmnitrixItem extends Item implements GeoItem {
     public @NotNull InteractionResultHolder<ItemStack> use(Level pLevel, Player pPlayer, @NotNull InteractionHand pUsedHand) {
         ItemStack itemStack = pPlayer.getItemInHand(pUsedHand);
         if(!pLevel.isClientSide){
+            PowerCap powerCap = ((IBen10ModCapCache)pPlayer).ben10Mod$getCachedPowerCap();
+            if(powerCap != null){
+                ServerPlayer serverPlayer = ((ServerPlayer) pPlayer);
+                if(powerCap.getInventory().getStackInSlot(0).isEmpty()){
+                    powerCap.getInventory().setStackInSlot(0, itemStack.copyAndClear());
+                    powerCap.getInventory().getStackInSlot(0).getOrCreateTag().putUUID(playerUsingUUIDTag, pPlayer.getUUID());
+                    GeoItem.getOrAssignId(powerCap.getInventory().getStackInSlot(0), (ServerLevel) pPlayer.level());
+                    pLevel.playSound(null, pPlayer.getX(), pPlayer.getY(), pPlayer.getZ(), ModSounds.OMNITRIX_PUTTING.get(),
+                            SoundSource.PLAYERS, 0.5f, 1.0f);
+
+                    if(powerCap.getPower() == null){
+                        powerCap.setPower(OmnitrixPower.id);
+                    }
+                    ModNetworking.sendToClientTrackingAndSelf(new PowerCapS2CPacket(powerCap.getInventory().serializeNBT(), pPlayer.getUUID(),
+                            powerCap.isHudActive(), powerCap.getHudSlot(), powerCap.getPowerID()), serverPlayer);
+
+                    //pPlayer.sendSystemMessage(Component.literal("Pois omnitrix"));
+
+                }
+                //pPlayer.sendSystemMessage(pwrCap.getInventory().getStackInSlot(0).getDisplayName());
+
+            }
+
+            /*
             pPlayer.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(pwrCap -> {
                 ServerPlayer serverPlayer = ((ServerPlayer) pPlayer);
                 if(pwrCap.getInventory().getStackInSlot(0).isEmpty()){
@@ -140,6 +166,8 @@ public abstract class AbstractOmnitrixItem extends Item implements GeoItem {
                 //pPlayer.sendSystemMessage(pwrCap.getInventory().getStackInSlot(0).getDisplayName());
 
             });
+
+             */
         }
 
         return InteractionResultHolder.sidedSuccess(itemStack, pLevel.isClientSide());

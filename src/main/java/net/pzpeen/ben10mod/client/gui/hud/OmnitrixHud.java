@@ -21,6 +21,7 @@ import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 import net.minecraftforge.event.TickEvent;
 import net.pzpeen.ben10mod.Ben10Mod;
+import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCap;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
 import net.pzpeen.ben10mod.items.custom.dna_bank.AbstractDnaBankItem;
@@ -36,7 +37,7 @@ import net.pzpeen.ben10mod.utils.ModUtilities;
 import org.lwjgl.glfw.GLFW;
 
 public class OmnitrixHud {
-    private static final ResourceLocation OMNITRIX_HUD_TEXTURE = ResourceLocation.fromNamespaceAndPath(Ben10Mod.MOD_ID,
+    public static final ResourceLocation OMNITRIX_HUD_TEXTURE = ResourceLocation.fromNamespaceAndPath(Ben10Mod.MOD_ID,
             "textures/gui/hud/omnitrix_hud.png");
     public static final ResourceLocation LOCKED_ICON_TEXTURE = ResourceLocation.fromNamespaceAndPath(Ben10Mod.MOD_ID,
             "textures/gui/hud/locked_icon.png");
@@ -142,6 +143,57 @@ public class OmnitrixHud {
         poseStack.popPose();
 
         //Right hand render
+        PowerCap powerCap = ((IBen10ModCapCache)mc.player).ben10Mod$getCachedPowerCap();
+        if(powerCap != null){
+            int slapTick = 0;
+            if(powerCap.getPower() instanceof OmnitrixPower power){
+                slapTick = power.getSlapAnimationTick();
+                //System.out.println("GETTING SLAP ANIMATION TICK ON 1 PERSON, TICK: " + slapTick);
+            }
+
+
+            poseStack.pushPose();
+            float rightHandYPos = Mth.lerp(smoothInterpolationProgress, -2.0f, -0.3f);
+            if(slapTick > 0){
+                if(slapTick >= 4){
+                    float progress = (8 - slapTick) / 4.0f;
+
+                    poseStack.translate(0.5f - (progress * 0.15), rightHandYPos + (progress * 0.2f), -0.75f + (progress * 0.1f));
+                    poseStack.mulPose(Axis.XP.rotationDegrees(30.0f));
+                    poseStack.mulPose(Axis.YP.rotationDegrees(50.0f));
+                    poseStack.mulPose(Axis.ZN.rotationDegrees(-30.0f));
+                    poseStack.mulPose(Axis.XN.rotationDegrees( 80.0f - (progress * 30f)));
+                    poseStack.mulPose(Axis.YN.rotationDegrees(-30.0f));
+
+                }else{
+                    float progress = (3 - slapTick) / 3.0f;
+
+                    poseStack.translate(0.35f, ((rightHandYPos +  0.2f) - (progress * 0.2f)), -0.65f - (progress * 0.1f));
+                    poseStack.mulPose(Axis.XP.rotationDegrees(30.0f));
+                    poseStack.mulPose(Axis.YP.rotationDegrees(50.0f));
+                    poseStack.mulPose(Axis.ZN.rotationDegrees(-30.0f));
+                    poseStack.mulPose(Axis.XN.rotationDegrees( 50.0f + (progress * 30f)));
+                    poseStack.mulPose(Axis.YN.rotationDegrees(-30.0f));
+                }
+
+            }else{
+
+                poseStack.translate(0.5f, rightHandYPos, -0.75f);
+                poseStack.mulPose(Axis.XP.rotationDegrees(30.0f));
+                poseStack.mulPose(Axis.YP.rotationDegrees(50.0f));
+                poseStack.mulPose(Axis.ZN.rotationDegrees(-30.0f));
+                poseStack.mulPose(Axis.XN.rotationDegrees( 80.0f));
+                poseStack.mulPose(Axis.YN.rotationDegrees(-30.0f));
+
+            }
+
+            playerRenderer.renderRightHand(poseStack, multiBufferSource, combinedLight, mc.player);
+
+
+            poseStack.popPose();
+
+        }
+        /*
         mc.player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(powerCap -> {
             int slapTick = 0;
             if(powerCap.getPower() instanceof OmnitrixPower power){
@@ -193,6 +245,8 @@ public class OmnitrixHud {
 
         });
 
+         */
+
 
     }
 
@@ -207,6 +261,34 @@ public class OmnitrixHud {
 
         if (mc.player == null) return;
 
+        PowerCap powerCap = ((IBen10ModCapCache)mc.player).ben10Mod$getCachedPowerCap();
+        if(powerCap != null){
+            if (powerCap.isHudActive()){
+                for (int i = 0; i < 10; i++){
+                    if(event.getKey() == GLFW.GLFW_KEY_0 + i){
+                        if(powerCap.getHudSlot() != i){
+                            if(dialCooldown.isCharged()){
+                                mc.player.clientLevel.playLocalSound(mc.player.getX(), mc.player.getY(), mc.player.getZ(),
+                                        ModSounds.OMNITRIX_DIAL.get(), SoundSource.PLAYERS,
+                                        1.0f, 1.0f, false);
+                                dialCooldown.setLastTimeUsed();
+                            }
+
+                        }
+                        powerCap.setHudSlot(i);
+
+                        ModNetworking.sendToServer(new PowerCapC2SPacket(powerCap.isHudActive(), powerCap.getHudSlot()));
+                        if (i == 9) return;
+                        mc.options.keyHotbarSlots[i].consumeClick();
+
+                    }
+                }
+
+            }
+
+        }
+
+        /*
         mc.player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(pwrCap -> {
             if (pwrCap.isHudActive()){
                 for (int i = 0; i < 10; i++){
@@ -232,6 +314,8 @@ public class OmnitrixHud {
             }
         });
 
+         */
+
     }
 
     public static void interpolateMenuAnimation(TickEvent.ClientTickEvent event){
@@ -239,6 +323,19 @@ public class OmnitrixHud {
         Minecraft mc = Minecraft.getInstance();
         if(mc.player == null) return;
 
+        PowerCap powerCap = ((IBen10ModCapCache)mc.player).ben10Mod$getCachedPowerCap();
+        if(powerCap != null){
+            lastMenuAnimProgress = menuAnimProgress;
+            if (powerCap.isHudActive() && menuAnimProgress < 1.0f){
+                menuAnimProgress += menuInterpolationSpeed;
+            } else if (!powerCap.isHudActive() && menuAnimProgress > 0.0f) {
+                menuAnimProgress -= menuInterpolationSpeed;
+            }
+            menuAnimProgress = Mth.clamp(menuAnimProgress, 0.0f, 1.0f);
+
+        }
+
+        /*
         mc.player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(pwrCap -> {
             lastMenuAnimProgress = menuAnimProgress;
             if (pwrCap.isHudActive() && menuAnimProgress < 1.0f){
@@ -250,6 +347,8 @@ public class OmnitrixHud {
 
         });
 
+         */
+
     }
 
     public static void blockHotbarNumberControlWhenInPowerHud(TickEvent.ClientTickEvent event){
@@ -257,6 +356,18 @@ public class OmnitrixHud {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player == null) return;
 
+        PowerCap powerCap = ((IBen10ModCapCache)mc.player).ben10Mod$getCachedPowerCap();
+        if(powerCap != null){
+            if (powerCap.isHudActive()){
+                for (int i = 0; i < 9; i++){
+                    while (mc.options.keyHotbarSlots[i].consumeClick()){
+
+                    }
+                }
+            }
+
+        }
+        /*
         mc.player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(pwrCap -> {
             if (pwrCap.isHudActive()){
                 for (int i = 0; i < 9; i++){
@@ -266,12 +377,43 @@ public class OmnitrixHud {
                 }
             }
         });
+
+         */
     }
 
     public static void registerMouseScrollControl(InputEvent.MouseScrollingEvent event){
         Minecraft mc = Minecraft.getInstance();
         if(mc.player == null) return;
 
+        PowerCap powerCap = ((IBen10ModCapCache)mc.player).ben10Mod$getCachedPowerCap();
+        if(powerCap != null){
+            if (powerCap.isHudActive()){
+                event.setCanceled(true);
+
+                double scrollDelta = event.getScrollDelta();
+
+                if(scrollDelta > 0){
+                    powerCap.walkOnHudSlot(-1);
+                    if(dialCooldown.isCharged()){
+                        mc.player.clientLevel.playLocalSound(mc.player.getX(), mc.player.getY(), mc.player.getZ(),
+                                ModSounds.OMNITRIX_DIAL.get(), SoundSource.PLAYERS,
+                                1.0f, 1.0f, false);
+                        dialCooldown.setLastTimeUsed();
+                    }
+                } else if (scrollDelta < 0) {
+                    powerCap.walkOnHudSlot(1);
+                    if(dialCooldown.isCharged()){
+                        mc.player.clientLevel.playLocalSound(mc.player.getX(), mc.player.getY(), mc.player.getZ(),
+                                ModSounds.OMNITRIX_DIAL.get(), SoundSource.PLAYERS,
+                                1.0f, 1.0f, false);
+                        dialCooldown.setLastTimeUsed();
+                    }
+                }
+                ModNetworking.sendToServer(new PowerCapC2SPacket(powerCap.isHudActive(), powerCap.getHudSlot()));
+            }
+        }
+
+        /*
         mc.player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(pwrCap -> {
             if (pwrCap.isHudActive()){
                 event.setCanceled(true);
@@ -298,6 +440,8 @@ public class OmnitrixHud {
                 ModNetworking.sendToServer(new PowerCapC2SPacket(pwrCap.isHudActive(), pwrCap.getHudSlot()));
             }
         });
+
+         */
 
     }
 
