@@ -22,8 +22,10 @@ public class GenericHud {
         int actualY = startY + (pSlotPos*22);
 
         pGuiGraphics.blit(OmnitrixHud.OMNITRIX_HUD_TEXTURE, startX, actualY, 0, 46, slotSize, slotSize);
-        pGuiGraphics.blit(pSkill.getIcon(), startX+3, actualY + 3, 0, 0, 16, 16, 16, 16);
-
+        if(pSkill.getIcon() != null){
+            pGuiGraphics.blit(pSkill.getIcon(), startX+3, actualY + 3,
+                    0, 0, 16, 16, 16, 16);
+        }
         float progress =  (float)pSkill.getCooldown().getRemainingTicks() / pSkill.getMaxCooldown();
         int squareSize = (int) Math.ceil(progress * 16);
         int squareYPos = actualY + 3 + (16 - squareSize);

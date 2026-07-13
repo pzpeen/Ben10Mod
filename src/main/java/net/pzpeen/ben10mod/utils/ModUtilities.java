@@ -1,6 +1,69 @@
 package net.pzpeen.ben10mod.utils;
 
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ClipContext;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.phys.AABB;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.Vec3;
+
+import java.util.List;
+import java.util.Optional;
+
+
 public class ModUtilities {
+
+    public static LivingEntity entityRaycast(Player player, double maxDistanceInBlocks){
+        Level level = player.level();
+
+        Vec3 start = player.getEyePosition();
+        Vec3 direction = player.getLookAngle();
+        Vec3 end = start.add(direction.scale(maxDistanceInBlocks));
+
+        AABB searchArea = player.getBoundingBox().expandTowards(direction.scale(maxDistanceInBlocks)).inflate(1.0f);
+
+        List<LivingEntity> entities = level.getEntitiesOfClass(LivingEntity.class, searchArea,
+                e -> e != player && player.isAlive());
+
+        LivingEntity closestEntity = null;
+        double smallestDistanceToSqr = Double.MAX_VALUE;
+
+        for(LivingEntity entity : entities){
+            AABB hitbox = entity.getBoundingBox().inflate(0.4f);
+            Optional<Vec3> impactPoint = hitbox.clip(start, end);
+
+            if(impactPoint.isPresent()){
+                double distanceToSqr = start.distanceToSqr(impactPoint.get());
+                if(distanceToSqr < smallestDistanceToSqr){
+                    smallestDistanceToSqr = distanceToSqr;
+                    closestEntity = entity;
+                }
+
+            }
+
+
+        }
+
+        return closestEntity;
+
+
+    }
+
+    public static BlockHitResult colliderBlockRaycast(Player player, double maxDistanceInBlocks){
+        Level level = player.level();
+
+        Vec3 start = player.getEyePosition();
+        Vec3 direction = player.getLookAngle();
+        Vec3 end = start.add(direction.scale(maxDistanceInBlocks));
+
+        ClipContext context = new ClipContext(start, end, ClipContext.Block.COLLIDER, ClipContext.Fluid.ANY, player);
+
+        BlockHitResult blockHitResult = level.clip(context);
+
+        return blockHitResult;
+
+    }
 
     public static class Cooldown {
         double lastTimeMillis;

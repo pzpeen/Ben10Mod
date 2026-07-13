@@ -12,6 +12,7 @@ import net.minecraftforge.event.AttachCapabilitiesEvent;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
 import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
+import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -25,6 +26,7 @@ import net.pzpeen.ben10mod.capabilities.race_capability.RaceCapProvider;
 import net.pzpeen.ben10mod.networking.ModNetworking;
 import net.pzpeen.ben10mod.networking.packets.PowerCapS2CPacket;
 import net.pzpeen.ben10mod.networking.packets.RaceCapS2CPacket;
+import net.pzpeen.ben10mod.races.AbstractRace;
 
 
 public class ModEvents {
@@ -270,8 +272,18 @@ public class ModEvents {
         }
 
 
+        @SubscribeEvent
+        public static void onLivingFall(LivingFallEvent event){
+            if(event.getEntity() instanceof Player player && !player.level().isClientSide()){
+                AbstractRace race = ((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace();
+                if(race != null){
+                    float newDistance = Math.max(0f, event.getDistance() - race.getFallDamageResistance());
+                    event.setDistance(newDistance);
+                }
 
-        //Combat Events
+            }
+        }
+
 
         @SubscribeEvent
         public static void onLivingAttack(LivingAttackEvent event){
@@ -322,18 +334,33 @@ public class ModEvents {
         @SubscribeEvent
         public static void onPlayerTick(TickEvent.PlayerTickEvent event){
             if(event.phase == TickEvent.Phase.END){
-                /*
-                event.player.getCapability(PowerCapProvider.PLAYER_POWER_CAP).ifPresent(powerCap -> {
-                    if(powerCap.getPower() != null){
-                        powerCap.getPower().tick(event.player);
-                    }
-                });
-
-                 */
-
+                //Ticking power
                 if(((IBen10ModCapCache)event.player).ben10Mod$getCachedPowerCap().getPower() != null){
                     ((IBen10ModCapCache)event.player).ben10Mod$getCachedPowerCap().getPower().tick(event.player);
                 }
+
+                //Ticking holding skills
+                if(((IBen10ModCapCache)event.player).ben10Mod$getCachedRaceCap().getRace() != null){
+                    AbstractRace race = ((IBen10ModCapCache)event.player).ben10Mod$getCachedRaceCap().getRace();
+                    if(race.getSkill1() != null && race.getSkill1().isHolding()){
+                        race.holdSkill1();
+                    }
+                    if(race.getSkill2() != null && race.getSkill2().isHolding()){
+                        race.holdSkill2();
+                    }
+                    if(race.getSkill3() != null && race.getSkill3().isHolding()){
+                        race.holdSkill3();
+                    }
+                    if(race.getSkill4() != null && race.getSkill4().isHolding()){
+                        race.holdSkill4();
+                    }
+                    if(race.getSkill5() != null && race.getSkill5().isHolding()){
+                        race.holdSkill5();
+                    }
+
+                }
+
+
             }
         }
 

@@ -15,7 +15,7 @@ public class ModEntities {
 
     public static final RegistryObject<EntityType<FireBallEntity>> FIRE_BALL = ENTITIES.register("fire_ball", () ->
        EntityType.Builder.<FireBallEntity>of(FireBallEntity::new, MobCategory.MISC)
-               .sized(0.5f,0.5f)
+               .sized(0.6f,0.6f)
                .clientTrackingRange(4)
                .updateInterval(10)
                .fireImmune()

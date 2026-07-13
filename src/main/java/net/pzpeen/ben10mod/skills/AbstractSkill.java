@@ -7,6 +7,7 @@ import net.pzpeen.ben10mod.utils.ModUtilities;
 public abstract class AbstractSkill {
     protected int maxCooldown;
     protected ModUtilities.TickTimer cooldown = new ModUtilities.TickTimer();
+    private boolean holding = false;
 
     public void setMaxCooldown(int maxCooldown){
         this.maxCooldown = maxCooldown;
@@ -21,7 +22,21 @@ public abstract class AbstractSkill {
         cooldown.start(maxCooldown);
     }
 
-    public abstract boolean use(Player player);
+    public boolean isHolding(){
+        return holding;
+    }
+    public void setHolding(boolean holding){
+        this.holding = holding;
+    }
+
+    public boolean use(Player player){return false;};
+
+    public boolean hold(Player player){return false;}
+
+    public boolean release(Player player){
+        setHolding(false);
+        return true;
+    }
 
     public abstract ResourceLocation getIcon();
 

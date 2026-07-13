@@ -49,6 +49,18 @@ public abstract class AbstractRace implements GeoAnimatable {
         if(getSkill1() != null){
             getSkill1().getCooldown().tick();
         }
+        if(getSkill2() != null){
+            getSkill2().getCooldown().tick();
+        }
+        if(getSkill3() != null){
+            getSkill3().getCooldown().tick();
+        }
+        if(getSkill4() != null){
+            getSkill4().getCooldown().tick();
+        }
+        if(getSkill5() != null){
+            getSkill5().getCooldown().tick();
+        }
     }
 
     public float getCustomWidth(){return 0.6f;}
@@ -87,6 +99,9 @@ public abstract class AbstractRace implements GeoAnimatable {
 
     public int getWaterEffectDuration(){return 100;}
 
+    //How many more blocks the alien can fall without fall damage (zero is a normal player)
+    public float getFallDamageResistance(){return 0f;}
+
     public boolean isInFirstPersonView(){
         if(this.player.level().isClientSide()){
             return ModClientUtilities.isLocalPlayerFirstPerson(this.player);
@@ -100,17 +115,49 @@ public abstract class AbstractRace implements GeoAnimatable {
 
     public abstract void render(PoseStack poseStack, Player player, MultiBufferSource bufferSource, int packedLight, float partialTick);
 
-    public abstract AbstractSkill getSkill1();
+    public AbstractSkill getSkill1(){return  null;}
 
     public void useSkill1(){}
 
+    public void holdSkill1(){}
+
+    public void releaseSkill1(){}
+
+    public AbstractSkill getSkill2(){return  null;}
+
     public void useSkill2(){}
+
+    public void holdSkill2(){}
+
+    public void releaseSkill2(){}
+
+    public AbstractSkill getSkill3(){return  null;}
 
     public void useSkill3(){}
 
+    public void holdSkill3(){}
+
+    public void releaseSkill3(){}
+
+    public AbstractSkill getSkill4(){return  null;}
+
     public void useSkill4(){}
 
+    public void holdSkill4(){}
+
+    public void releaseSkill4(){}
+
+    public AbstractSkill getSkill5(){return  null;}
+
     public void useSkill5(){}
+
+    public void holdSkill5(){}
+
+    public void releaseSkill5(){}
+
+    public boolean customAlienArmAnimations(RenderHandEvent event, PoseStack PoseStack, MultiBufferSource bufferSource, int packedLight, float partialTick, AlienArmRenderer renderer){
+        return false;
+    }
 
     public void renderAlienArm(RenderHandEvent event){
         Player player = Minecraft.getInstance().player;
@@ -121,6 +168,10 @@ public abstract class AbstractRace implements GeoAnimatable {
         int packedLight = event.getPackedLight();
         float partialTick = event.getPartialTick();
         AlienArmRenderer renderer = this.getAlienArmRenderer();
+
+        if(customAlienArmAnimations(event, poseStack, bufferSource, packedLight, partialTick, renderer)){
+            return;
+        }
 
         if(event.getHand() == InteractionHand.MAIN_HAND){
             if(event.getItemStack().isEmpty()){

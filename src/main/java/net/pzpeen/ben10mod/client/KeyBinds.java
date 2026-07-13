@@ -9,9 +9,7 @@ import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.client.settings.KeyConflictContext;
 import net.pzpeen.ben10mod.capabilities.IBen10ModCapCache;
 import net.pzpeen.ben10mod.capabilities.power_capability.PowerCap;
-import net.pzpeen.ben10mod.capabilities.power_capability.PowerCapProvider;
 import net.pzpeen.ben10mod.capabilities.race_capability.RaceCap;
-import net.pzpeen.ben10mod.capabilities.race_capability.RaceCapProvider;
 import net.pzpeen.ben10mod.client.gui.hud.OmnitrixHud;
 import net.pzpeen.ben10mod.items.ModItems;
 import net.pzpeen.ben10mod.networking.ModNetworking;
@@ -37,11 +35,31 @@ public class KeyBinds {
             new KeyMapping("key.keybinds.ben10mod.skill_1", KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
                     GLFW.GLFW_KEY_Z, MOD_KEYBIND_CATEGORY);
 
+    public static final KeyMapping SKILL_2 =
+            new KeyMapping("key.keybinds.ben10mod.skill_2", KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
+                    GLFW.GLFW_KEY_X, MOD_KEYBIND_CATEGORY);
+
+    public static final KeyMapping SKILL_3 =
+            new KeyMapping("key.keybinds.ben10mod.skill_3", KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
+                    GLFW.GLFW_KEY_C, MOD_KEYBIND_CATEGORY);
+
+    public static final KeyMapping SKILL_4 =
+            new KeyMapping("key.keybinds.ben10mod.skill_4", KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
+                    GLFW.GLFW_KEY_V, MOD_KEYBIND_CATEGORY);
+
+    public static final KeyMapping SKILL_5 =
+            new KeyMapping("key.keybinds.ben10mod.skill_5", KeyConflictContext.IN_GAME, InputConstants.Type.KEYSYM,
+                    GLFW.GLFW_KEY_B, MOD_KEYBIND_CATEGORY);
+
 
     public static void registerKeys(RegisterKeyMappingsEvent event){
         event.register(POWER_MENU);
         event.register(ACTIVATE_POWER);
         event.register(SKILL_1);
+        event.register(SKILL_2);
+        event.register(SKILL_3);
+        event.register(SKILL_4);
+        event.register(SKILL_5);
     }
 
     private static final long cooldownToActivatePower = 1000;
@@ -127,7 +145,7 @@ public class KeyBinds {
         }
 
         //Using Skill1
-        if(KeyBinds.SKILL_1.consumeClick()){
+        if(KeyBinds.SKILL_1.consumeClick() && !ClientEvents.ClientForgeEvents.wasHoldingSkill1){
             AbstractClientPlayer player = Minecraft.getInstance().player;
             assert player != null;
 
@@ -136,6 +154,52 @@ public class KeyBinds {
             }
 
         }
+
+        //Using Skill2
+        if(KeyBinds.SKILL_2.consumeClick() && !ClientEvents.ClientForgeEvents.wasHoldingSkill2){
+            AbstractClientPlayer player = Minecraft.getInstance().player;
+            assert player != null;
+
+            if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace() != null){
+                ModNetworking.sendToServer(new UseSkillC2SPacket(2));
+            }
+
+        }
+
+        //Using Skill3
+        if(KeyBinds.SKILL_3.consumeClick() && !ClientEvents.ClientForgeEvents.wasHoldingSkill3){
+            AbstractClientPlayer player = Minecraft.getInstance().player;
+            assert player != null;
+
+            if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace() != null){
+                ModNetworking.sendToServer(new UseSkillC2SPacket(3));
+            }
+
+        }
+
+        //Using Skill4
+        if(KeyBinds.SKILL_4.consumeClick() && !ClientEvents.ClientForgeEvents.wasHoldingSkill4){
+            AbstractClientPlayer player = Minecraft.getInstance().player;
+            assert player != null;
+
+            if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace() != null){
+                ModNetworking.sendToServer(new UseSkillC2SPacket(4));
+            }
+
+        }
+
+        //Using Skill5
+        if(KeyBinds.SKILL_5.consumeClick() && !ClientEvents.ClientForgeEvents.wasHoldingSkill5){
+            AbstractClientPlayer player = Minecraft.getInstance().player;
+            assert player != null;
+
+            if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace() != null){
+                ModNetworking.sendToServer(new UseSkillC2SPacket(5));
+            }
+
+        }
+
+
 
     }
 

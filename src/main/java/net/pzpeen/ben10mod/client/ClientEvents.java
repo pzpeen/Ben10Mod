@@ -1,6 +1,7 @@
 package net.pzpeen.ben10mod.client;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.entity.player.PlayerRenderer;
 import net.minecraft.world.entity.player.Player;
@@ -21,6 +22,7 @@ import net.pzpeen.ben10mod.entities.ModEntities;
 import net.pzpeen.ben10mod.entities.projectiles.FireBallRenderer;
 import net.pzpeen.ben10mod.items.ModItems;
 import net.pzpeen.ben10mod.networking.ModNetworking;
+import net.pzpeen.ben10mod.networking.packets.UseSkillC2SPacket;
 import net.pzpeen.ben10mod.networking.packets.power_animations.PowerLeftMouseC2SPacket;
 import net.pzpeen.ben10mod.powers.OmnitrixPower;
 import net.pzpeen.ben10mod.utils.ModTags;
@@ -31,11 +33,110 @@ public class ClientEvents {
     @Mod.EventBusSubscriber(modid = Ben10Mod.MOD_ID, value = Dist.CLIENT)
     public static class ClientForgeEvents{
 
+        //Handling with hold skills
+        public static boolean wasHoldingSkill1 = false;
+        public static boolean wasHoldingSkill2 = false;
+        public static boolean wasHoldingSkill3 = false;
+        public static boolean wasHoldingSkill4 = false;
+        public static boolean wasHoldingSkill5 = false;
+
         @SubscribeEvent
         public static void onClientTick(TickEvent.ClientTickEvent event){
             //Omnitrix Power hud
             OmnitrixHud.blockHotbarNumberControlWhenInPowerHud(event);
             OmnitrixHud.interpolateMenuAnimation(event);
+
+            //Handling with hold skills
+            boolean isHoldingSkill1 = KeyBinds.SKILL_1.isDown();
+            boolean isHoldingSkill2 = KeyBinds.SKILL_2.isDown();
+            boolean isHoldingSkill3 = KeyBinds.SKILL_3.isDown();
+            boolean isHoldingSkill4 = KeyBinds.SKILL_4.isDown();
+            boolean isHoldingSkill5 = KeyBinds.SKILL_5.isDown();
+            AbstractClientPlayer player = Minecraft.getInstance().player;
+            assert player != null;
+
+            //Skill1
+            if(!wasHoldingSkill1 && isHoldingSkill1 &&
+                    !(isHoldingSkill2 || isHoldingSkill3 || isHoldingSkill4 || isHoldingSkill5)){
+
+                wasHoldingSkill1 = true;
+                if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace() != null){
+                    ModNetworking.sendToServer(new UseSkillC2SPacket(1, 'h'));
+                }
+            }
+            if(wasHoldingSkill1 && !isHoldingSkill1){
+                wasHoldingSkill1 = false;
+
+                if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace() != null){
+                    ModNetworking.sendToServer(new UseSkillC2SPacket(1, 'r'));
+                }
+            }
+
+            //Skill2
+            if(!wasHoldingSkill2 && isHoldingSkill2 &&
+                    !(isHoldingSkill1 || isHoldingSkill3 || isHoldingSkill4 || isHoldingSkill5)){
+
+                wasHoldingSkill2 = true;
+                if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace() != null){
+                    ModNetworking.sendToServer(new UseSkillC2SPacket(2, 'h'));
+                }
+            }
+            if(wasHoldingSkill2 && !isHoldingSkill2){
+                wasHoldingSkill2 = false;
+
+                if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace() != null){
+                    ModNetworking.sendToServer(new UseSkillC2SPacket(2, 'r'));
+                }
+            }
+
+            //Skill3
+            if(!wasHoldingSkill3 && isHoldingSkill3 &&
+                    !(isHoldingSkill1 || isHoldingSkill2 || isHoldingSkill4 || isHoldingSkill5)){
+                wasHoldingSkill3 = true;
+                if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace() != null){
+                    ModNetworking.sendToServer(new UseSkillC2SPacket(3, 'h'));
+                }
+            }
+            if(wasHoldingSkill3 && !isHoldingSkill3){
+                wasHoldingSkill3 = false;
+                if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace() != null){
+                    ModNetworking.sendToServer(new UseSkillC2SPacket(3, 'r'));
+                }
+            }
+
+            //Skill4
+            if(!wasHoldingSkill4 && isHoldingSkill4 &&
+                    !(isHoldingSkill1 || isHoldingSkill2 || isHoldingSkill3 || isHoldingSkill5)){
+
+                wasHoldingSkill4 = true;
+                if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace() != null){
+                    ModNetworking.sendToServer(new UseSkillC2SPacket(4, 'h'));
+                }
+            }
+            if(wasHoldingSkill4 && !isHoldingSkill4){
+                wasHoldingSkill4 = false;
+
+                if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace() != null){
+                    ModNetworking.sendToServer(new UseSkillC2SPacket(4, 'r'));
+                }
+            }
+
+            //Skill5
+            if(!wasHoldingSkill5 && isHoldingSkill5 &&
+                    !(isHoldingSkill1 || isHoldingSkill2 || isHoldingSkill3 || isHoldingSkill4)){
+
+                wasHoldingSkill5 = true;
+                if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace() != null){
+                    ModNetworking.sendToServer(new UseSkillC2SPacket(5, 'h'));
+                }
+            }
+            if(wasHoldingSkill5 && !isHoldingSkill5){
+                wasHoldingSkill5 = false;
+
+                if(((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap().getRace() != null){
+                    ModNetworking.sendToServer(new UseSkillC2SPacket(5, 'r'));
+                }
+            }
 
         }
 
@@ -102,9 +203,35 @@ public class ClientEvents {
 
             RaceCap raceCap = ((IBen10ModCapCache)player).ben10Mod$getCachedRaceCap();
             if(raceCap != null && raceCap.getRace() != null){
-                if(raceCap.getRace().getSkill1().getCooldown().isActive()){
-                    GenericHud.renderSkillCooldown(event.getGuiGraphics(), 0,
-                            raceCap.getRace().getSkill1());
+                if(raceCap.getRace().getSkill1() != null){
+                    if(raceCap.getRace().getSkill1().getCooldown().isActive()){
+                        GenericHud.renderSkillCooldown(event.getGuiGraphics(), 0,
+                                raceCap.getRace().getSkill1());
+                    }
+                }
+                if(raceCap.getRace().getSkill2() != null){
+                    if(raceCap.getRace().getSkill2().getCooldown().isActive()){
+                        GenericHud.renderSkillCooldown(event.getGuiGraphics(), 1,
+                                raceCap.getRace().getSkill2());
+                    }
+                }
+                if(raceCap.getRace().getSkill3() != null){
+                    if(raceCap.getRace().getSkill3().getCooldown().isActive()){
+                        GenericHud.renderSkillCooldown(event.getGuiGraphics(), 2,
+                                raceCap.getRace().getSkill3());
+                    }
+                }
+                if(raceCap.getRace().getSkill4() != null){
+                    if(raceCap.getRace().getSkill4().getCooldown().isActive()){
+                        GenericHud.renderSkillCooldown(event.getGuiGraphics(), 3,
+                                raceCap.getRace().getSkill4());
+                    }
+                }
+                if(raceCap.getRace().getSkill5() != null){
+                    if(raceCap.getRace().getSkill5().getCooldown().isActive()){
+                        GenericHud.renderSkillCooldown(event.getGuiGraphics(), 4,
+                                raceCap.getRace().getSkill5());
+                    }
                 }
             }
 

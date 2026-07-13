@@ -37,17 +37,11 @@ public class FireBallSkill extends AbstractSkill {
                 player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
                         SoundEvents.GHAST_SHOOT, SoundSource.PLAYERS, 1.0f, 1.0f);
 
-                System.out.println("Bola de fogo usada");
-
             }
             this.startCooldown();
             return true;
-        }else{
-            if(!player.level().isClientSide()){
-                System.out.println("Bola de fogo em cooldown: "+ cooldown.getRemainingTicks() + " ticks");
-            }
-            return false;
         }
+        return false;
     }
 
     @Override

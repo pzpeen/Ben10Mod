@@ -31,12 +31,12 @@ public class PyroniteModel extends GeoModel<PyroniteRace> {
     @Override
     public void setCustomAnimations(PyroniteRace animatable, long instanceId, AnimationState<PyroniteRace> animationState) {
         super.setCustomAnimations(animatable, instanceId, animationState);
+
+        EntityModelData modelData = animationState.getData(DataTickets.ENTITY_MODEL_DATA);
+        Entity entity = animationState.getData(DataTickets.ENTITY);
+
         CoreGeoBone head = this.getAnimationProcessor().getBone("head");
-
         if(head != null){
-            EntityModelData modelData = animationState.getData(DataTickets.ENTITY_MODEL_DATA);
-            Entity entity = animationState.getData(DataTickets.ENTITY);
-
             if(modelData != null && entity instanceof LivingEntity player){
                 float headYaw = modelData.netHeadYaw() * Mth.DEG_TO_RAD;
                 float headPitch = modelData.headPitch() * Mth.DEG_TO_RAD;
@@ -44,8 +44,25 @@ public class PyroniteModel extends GeoModel<PyroniteRace> {
                 head.setRotY(headYaw*-1);
                 head.setRotX(headPitch*-1);
             }
+        }
 
+        CoreGeoBone rightArm = this.getAnimationProcessor().getBone("rightArm");
+        CoreGeoBone leftArm = this.getAnimationProcessor().getBone("leftArm");
 
+        if(animatable.getSkill3().isHolding() && !animatable.getSkill3().getCooldown().isActive() && rightArm != null && leftArm != null){
+            if(modelData != null){
+                float headPitch = modelData.headPitch() * Mth.DEG_TO_RAD;
+                float headYaw = modelData.netHeadYaw() * Mth.DEG_TO_RAD;
+
+                float rotX = -(headPitch - (90.0f * Mth.DEG_TO_RAD));
+
+                rightArm.setRotX(rotX);
+                leftArm.setRotX(rotX);
+
+                rightArm.setRotY(0.15f - headYaw);
+                leftArm.setRotY(-0.15f - headYaw);
+
+            }
         }
 
     }

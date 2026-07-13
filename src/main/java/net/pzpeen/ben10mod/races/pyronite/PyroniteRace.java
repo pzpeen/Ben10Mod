@@ -1,6 +1,8 @@
 package net.pzpeen.ben10mod.races.pyronite;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.resources.ResourceLocation;
@@ -11,6 +13,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.pzpeen.ben10mod.Ben10Mod;
 import net.pzpeen.ben10mod.effects.ModEffects;
@@ -18,6 +21,8 @@ import net.pzpeen.ben10mod.races.AbstractRace;
 import net.pzpeen.ben10mod.races.AlienArmRenderer;
 import net.pzpeen.ben10mod.skills.AbstractSkill;
 import net.pzpeen.ben10mod.skills.fire.FireBallSkill;
+import net.pzpeen.ben10mod.skills.fire.FireExtinguishSkill;
+import net.pzpeen.ben10mod.skills.fire.FlamethrowerSkill;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -35,6 +40,8 @@ public class PyroniteRace extends AbstractRace {
     private static final AlienArmRenderer ARM_RENDERER = new PyroniteArmRenderer(id);
 
     private final FireBallSkill skill1 = new FireBallSkill();
+    private final FireExtinguishSkill skill2 = new FireExtinguishSkill();
+    private final FlamethrowerSkill skill3 = new FlamethrowerSkill();
 
     public PyroniteRace() {
         super();
@@ -55,7 +62,7 @@ public class PyroniteRace extends AbstractRace {
         return 2.1f;
     }
 
-    public boolean isOnWater(){
+    public boolean isWet(){
         return this.player.hasEffect(ModEffects.WET.get()) || player.isInWater();
     }
 
@@ -67,7 +74,7 @@ public class PyroniteRace extends AbstractRace {
     @Override
     public void doBareHandHit(LivingHurtEvent event) {
         assert event.getSource().getEntity() != null;
-        if(this.isOnWater()) return;
+        if(this.isWet()) return;
         event.getEntity().setSecondsOnFire(3);
     }
 
@@ -102,13 +109,18 @@ public class PyroniteRace extends AbstractRace {
     }
 
     @Override
+    public float getFallDamageResistance() {
+        return 7f;
+    }
+
+    @Override
     public AbstractSkill getSkill1() {
         return skill1;
     }
 
     @Override
     public void useSkill1() {
-        if(!isOnWater()){
+        if(!isWet()){
             if(skill1.use(player)){
                 player.swing(InteractionHand.MAIN_HAND);
             }
@@ -134,8 +146,171 @@ public class PyroniteRace extends AbstractRace {
     }
 
     @Override
+    public FireExtinguishSkill getSkill2() {
+        return skill2;
+    }
+
+    @Override
+    public void useSkill2() {
+
+        if(!player.isInWater()){
+            if(skill2.use(player)){
+                if(player.level() instanceof ServerLevel serverLevel){
+                    if(skill2.hasExtinguishedFire()){
+                        if(player.hasEffect(ModEffects.WET.get())){
+                            player.removeEffect(ModEffects.WET.get());
+                        }
+                    }
+                    if(!isWet()){
+                        serverLevel.sendParticles(
+                                ParticleTypes.FLAME,
+                                player.getX(),
+                                player.getY() + 1,
+                                player.getZ(),
+                                15,
+                                0.2,
+                                0.2,
+                                0.2,
+                                0.1
+                        );
+                        serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
+                                SoundEvents.BLAZE_SHOOT, SoundSource.PLAYERS, 1.0f, 1.3f);
+                    }else{
+                        serverLevel.sendParticles(
+                                ParticleTypes.LARGE_SMOKE,
+                                player.getX(),
+                                player.getY() + 1,
+                                player.getZ(),
+                                15,
+                                0.2,
+                                0.2,
+                                0.2,
+                                0.05
+                        );
+                        serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
+                                SoundEvents.LAVA_EXTINGUISH, SoundSource.PLAYERS, 1.0f, 1.0f);
+
+                    }
+
+                }
+
+
+            }
+
+        }else{
+            if(player.level() instanceof  ServerLevel serverLevel){
+                serverLevel.sendParticles(
+                        ParticleTypes.LARGE_SMOKE,
+                        player.getX(),
+                        player.getY() + 1,
+                        player.getZ(),
+                        15,
+                        0.2,
+                        0.2,
+                        0.2,
+                        0.05
+                );
+                serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        SoundEvents.LAVA_EXTINGUISH, SoundSource.PLAYERS, 1.0f, 1.0f);
+            }
+
+        }
+
+    }
+
+    @Override
+    public FlamethrowerSkill getSkill3() {
+        return skill3;
+    }
+
+    @Override
+    public void useSkill3() {
+        if(isWet()){
+            if(!player.level().isClientSide()){
+                ServerLevel serverLevel = (ServerLevel) player.level();
+                serverLevel.sendParticles(
+                        ParticleTypes.LARGE_SMOKE,
+                        player.getX(),
+                        player.getY() + 1,
+                        player.getZ(),
+                        15,
+                        0.2,
+                        0.2,
+                        0.2,
+                        0.05
+                );
+                serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        SoundEvents.LAVA_EXTINGUISH, SoundSource.PLAYERS, 1.0f, 1.0f);
+
+            }
+        }
+    }
+
+    @Override
+    public void holdSkill3() {
+        if(!isWet()){
+            skill3.hold(player);
+        }
+    }
+
+    @Override
+    public void releaseSkill3() {
+        if(!isWet()){
+            skill3.release(player);
+        }else{
+            skill3.setHolding(false);
+        }
+
+    }
+
+    @Override
     public AlienArmRenderer getAlienArmRenderer() {
         return ARM_RENDERER;
+    }
+
+    @Override
+    public boolean customAlienArmAnimations(RenderHandEvent event, PoseStack poseStack, MultiBufferSource bufferSource, int packedLight, float partialTick, AlienArmRenderer renderer) {
+        if(skill3.isHolding() && !skill3.getCooldown().isActive()){
+            event.cancel();
+            if(event.getHand() == InteractionHand.MAIN_HAND){
+                poseStack.pushPose();
+
+                poseStack.translate(0.15f, -1.4f, -0.8f);
+
+                poseStack.mulPose(Axis.XP.rotationDegrees(20.0f));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(15.0f));
+
+                renderer.render(poseStack, this, bufferSource, null,
+                        bufferSource.getBuffer(
+                                renderer.getRenderType(this, renderer.getTextureLocation(this),
+                                        null, partialTick)), packedLight);
+
+                poseStack.popPose();
+
+
+
+                poseStack.pushPose();
+
+                poseStack.scale(1.0f, 1.0f, 1.0f);
+
+                poseStack.translate(0.1f, -0.55f, -0.5f);
+
+                poseStack.mulPose(Axis.XP.rotationDegrees(20.0f));
+                poseStack.mulPose(Axis.ZP.rotationDegrees(-195.0f));
+
+                renderer.render(poseStack, this, bufferSource, null,
+                        bufferSource.getBuffer(
+                                renderer.getRenderType(this, renderer.getTextureLocation(this),
+                                        null, partialTick)), packedLight);
+
+                poseStack.popPose();
+
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     @Override
