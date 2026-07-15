@@ -102,6 +102,8 @@ public abstract class AbstractRace implements GeoAnimatable {
     //How many more blocks the alien can fall without fall damage (zero is a normal player)
     public float getFallDamageResistance(){return 0f;}
 
+    public float getFallDamageMultiplier(){return 1.0f;}
+
     public boolean isInFirstPersonView(){
         if(this.player.level().isClientSide()){
             return ModClientUtilities.isLocalPlayerFirstPerson(this.player);

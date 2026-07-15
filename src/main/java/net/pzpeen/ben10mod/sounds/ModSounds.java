@@ -27,6 +27,9 @@ public class ModSounds {
 
     public static final RegistryObject<SoundEvent> OMNITRIX_TRANSFORMATION = registerSoundEvent("omnitrix_transformation");
 
+    public static final RegistryObject<SoundEvent> FLAMETHROWER = registerSoundEvent("flamethrower");
+
+
     public static RegistryObject<SoundEvent> registerSoundEvent(String name){
         return SOUND_EVENTS.register(name, () ->
                 SoundEvent.createVariableRangeEvent(ResourceLocation.fromNamespaceAndPath(Ben10Mod.MOD_ID, name)));

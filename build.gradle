@@ -64,7 +64,7 @@ minecraft {
         configureEach {
             workingDirectory project.file('run')
 
-            jvmArg '-Xmx3G'  // Memória Máxima
+            jvmArg '-Xmx2G'  // Memória Máxima
 
             // Recommended logging data for a userdev environment
             // The markers can be added/remove as needed separated by commas.

@@ -1,5 +1,6 @@
 package net.pzpeen.ben10mod.skills.fire;
 
+import net.minecraft.client.resources.sounds.AbstractTickableSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
@@ -21,6 +22,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import net.pzpeen.ben10mod.skills.AbstractSkill;
+import net.pzpeen.ben10mod.sounds.ModSounds;
+import net.pzpeen.ben10mod.sounds.SoundManager;
 import net.pzpeen.ben10mod.utils.ModUtilities;
 
 import java.util.Optional;
@@ -38,7 +41,9 @@ public class FlamethrowerSkill extends AbstractSkill {
     boolean justStarted = true;
     double distance = maxRange;
 
-    public FlamethrowerSkill(){
+    double clientDistance = maxRange;
+
+    public FlamethrowerSkill(Player player){
         maxCooldown = 160;
     }
 
@@ -47,7 +52,6 @@ public class FlamethrowerSkill extends AbstractSkill {
     public boolean hold(Player player) {
         if(!getCooldown().isActive()){
             if(!player.level().isClientSide()){
-
                 //Raycast the block and the entity and handle them each 5 ticks
                 if(justStarted || player.tickCount % 5 == 0){
                     //Slowing player
@@ -78,7 +82,7 @@ public class FlamethrowerSkill extends AbstractSkill {
                         target.hurt(flamethrowerSource, damage);
                         target.setSecondsOnFire(5);
 
-                        target.knockback(0.2f, startPoint.x - target.getX(), startPoint.z - target.getZ());
+                        target.knockback(0.15f, startPoint.x - target.getX(), startPoint.z - target.getZ());
                     }else{
                         BlockPos blockPos = impactBlock.getBlockPos();
                         Direction direction = impactBlock.getDirection();
@@ -91,15 +95,25 @@ public class FlamethrowerSkill extends AbstractSkill {
                     }
 
                 }
+
+
+            }else{
                 if(player.tickCount % 2 == 0){
+                    BlockHitResult impactBlock = ModUtilities.colliderBlockRaycast(player, maxRange);
+                    Vec3 startPoint = player.getEyePosition();
+                    Vec3 endPoint = impactBlock.getType() == HitResult.Type.BLOCK ?
+                            impactBlock.getLocation() : startPoint.add(player.getLookAngle().scale(maxRange));
+
+                    clientDistance = startPoint.distanceTo(endPoint);
+
                     //Handle the particle effect every 2 ticks
-                    Vec3 startPoint = player.getEyePosition().subtract(0f, 0.5f, 0.0f);
+                    startPoint = player.getEyePosition().subtract(0f, 0.5f, 0.0f);
                     startPoint.add(player.getLookAngle().x * 0.3f, 0f, player.getLookAngle().z * 0.3f);
 
-                    double baseSpeed = Math.min(2.0/3.0, (distance / 30.0)*3.0) ;
+                    double baseSpeed = Math.min(2.0/3.0, (clientDistance / 30.0)*2.0) ;
 
-                    int density = 10;
-                    double coneAperture = Math.max(0.5/distance, 0.1) ;
+                    int density = 15;
+                    double coneAperture = Math.max(0.5/clientDistance, 0.1) ;
 
                     for(int i = 0; i < density; i++){
                         double xScattering = player.level().random.nextGaussian() * coneAperture;
@@ -110,20 +124,17 @@ public class FlamethrowerSkill extends AbstractSkill {
                         double ySpd = player.getLookAngle().y + yScattering;
                         double zSpd = player.getLookAngle().z + zScattering;
 
-                        ((ServerLevel)player.level()).sendParticles(
+                        player.level().addParticle(
                                 ParticleTypes.FLAME,
                                 startPoint.x, startPoint.y, startPoint.z,
-                                0,
-                                xSpd, ySpd, zSpd,
-                                baseSpeed);
+                                xSpd*baseSpeed, ySpd*baseSpeed, zSpd*baseSpeed
+                        );
                     }
 
+
                     //Sound
-                    player.level().playSound(null, player.getX(), player.getY(), player.getZ(),
-                            SoundEvents.FIRECHARGE_USE, SoundSource.PLAYERS, 1.0f, 1.4f);
+                    SoundManager.playSound(player, ModSounds.FLAMETHROWER.get());
                 }
-
-
 
             }
             //Check if the skill is on end then start the cooldown and reset some variables
@@ -139,6 +150,8 @@ public class FlamethrowerSkill extends AbstractSkill {
                     if(playerSpeedAtt != null){
                         playerSpeedAtt.removeModifier(slowModifier);
                     }
+                }else{
+                    SoundManager.stopSound(player, ModSounds.FLAMETHROWER.get());
                 }
             }
             return true;
@@ -154,6 +167,7 @@ public class FlamethrowerSkill extends AbstractSkill {
             this.getCooldown().start(Math.max((int)(usingTime*1.6), 40));
             justStarted = true;
             distance = maxRange;
+            clientDistance = maxRange;
             usingTime = 0;
             if(!player.level().isClientSide()){
                 AttributeInstance playerSpeedAtt = player.getAttribute(Attributes.MOVEMENT_SPEED);
@@ -161,6 +175,8 @@ public class FlamethrowerSkill extends AbstractSkill {
                 if(playerSpeedAtt != null){
                     playerSpeedAtt.removeModifier(slowModifier);
                 }
+            }else{
+                SoundManager.stopSound(player, ModSounds.FLAMETHROWER.get());
             }
 
         }

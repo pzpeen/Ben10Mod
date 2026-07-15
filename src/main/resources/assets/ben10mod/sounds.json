@@ -42,5 +42,12 @@
       "ben10mod:omnitrix/omnitrix_transformation_2",
       "ben10mod:omnitrix/omnitrix_transformation_3"
     ]
+  },
+
+  "flamethrower": {
+    "subtitles": "sounds.ben10mod.flamethrower",
+    "sounds": [
+      "ben10mod:skill/flamethrower"
+    ]
   }
 }

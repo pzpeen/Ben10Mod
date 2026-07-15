@@ -16,6 +16,7 @@ import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.pzpeen.ben10mod.Ben10Mod;
 import net.pzpeen.ben10mod.client.render.ModRenderTypes;
+import net.pzpeen.ben10mod.client.render.skill_models.RockBoardModel;
 import org.jetbrains.annotations.Nullable;
 import software.bernie.geckolib.cache.object.BakedGeoModel;
 import software.bernie.geckolib.cache.object.GeoBone;
@@ -138,6 +139,32 @@ public class PyroniteRenderer implements GeoRenderer<PyroniteRace> {
 
                 this.getRenderer().reRender(bakedModel, poseStack, bufferSource, animatable, omnitrixRender,
                         bufferSource.getBuffer(omnitrixRender), partialTick, packedLight, packedOverlay, 1f, 1f, 1f,1f);
+            }
+        });
+
+        //ROCK FLY SKILL LAYER
+        this.renderLayers.add(new GeoRenderLayer<PyroniteRace>(this) {
+            private final RockBoardModel rockBoardModel = new RockBoardModel();
+
+            @Override
+            public void render(PoseStack poseStack, PyroniteRace animatable, BakedGeoModel bakedModel, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
+                if(!animatable.getSkill4().isOnUse()){
+                    return;
+                }
+
+                BakedGeoModel rockBoardBaked = rockBoardModel.getBakedModel(rockBoardModel.getModelResource(animatable));
+                RenderType rockBoardRenderType = RenderType.entityCutoutNoCull(rockBoardModel.getTextureResource(animatable));
+                VertexConsumer rockBoardBuffer = bufferSource.getBuffer(rockBoardRenderType);
+
+                poseStack.pushPose();
+
+                poseStack.translate(0f, -0.1f, 0f);
+
+                this.getRenderer().reRender(rockBoardBaked, poseStack, bufferSource, animatable, rockBoardRenderType,
+                        rockBoardBuffer, partialTick, packedLight, OverlayTexture.NO_OVERLAY, 1, 1, 1, 1);
+
+                poseStack.popPose();
+
             }
         });
 

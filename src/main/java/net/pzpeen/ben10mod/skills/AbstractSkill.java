@@ -29,6 +29,13 @@ public abstract class AbstractSkill {
         this.holding = holding;
     }
 
+    public boolean isOnUse(){
+        if(isHolding() && !cooldown.isActive()){
+            return true;
+        }
+        return false;
+    }
+
     public boolean use(Player player){return false;};
 
     public boolean hold(Player player){return false;}

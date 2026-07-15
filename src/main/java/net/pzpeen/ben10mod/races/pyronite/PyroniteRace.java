@@ -1,7 +1,6 @@
 package net.pzpeen.ben10mod.races.pyronite;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.particles.ParticleTypes;
@@ -13,6 +12,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.AABB;
 import net.minecraftforge.client.event.RenderHandEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.pzpeen.ben10mod.Ben10Mod;
@@ -23,6 +23,9 @@ import net.pzpeen.ben10mod.skills.AbstractSkill;
 import net.pzpeen.ben10mod.skills.fire.FireBallSkill;
 import net.pzpeen.ben10mod.skills.fire.FireExtinguishSkill;
 import net.pzpeen.ben10mod.skills.fire.FlamethrowerSkill;
+import net.pzpeen.ben10mod.skills.physical.FlySkill;
+import net.pzpeen.ben10mod.sounds.ModSounds;
+import net.pzpeen.ben10mod.sounds.SoundManager;
 import software.bernie.geckolib.constant.DataTickets;
 import software.bernie.geckolib.core.animatable.GeoAnimatable;
 import software.bernie.geckolib.core.animatable.instance.AnimatableInstanceCache;
@@ -33,6 +36,8 @@ import software.bernie.geckolib.core.object.PlayState;
 import software.bernie.geckolib.renderer.GeoRenderer;
 import software.bernie.geckolib.util.GeckoLibUtil;
 
+import java.util.List;
+
 public class PyroniteRace extends AbstractRace {
     public static final ResourceLocation id = ResourceLocation.fromNamespaceAndPath(Ben10Mod.MOD_ID, "pyronite");
     private final AnimatableInstanceCache cache = GeckoLibUtil.createInstanceCache(this);
@@ -41,7 +46,8 @@ public class PyroniteRace extends AbstractRace {
 
     private final FireBallSkill skill1 = new FireBallSkill();
     private final FireExtinguishSkill skill2 = new FireExtinguishSkill();
-    private final FlamethrowerSkill skill3 = new FlamethrowerSkill();
+    private final FlamethrowerSkill skill3 = new FlamethrowerSkill(player);
+    private final FlySkill skill4 = new FlySkill();
 
     public PyroniteRace() {
         super();
@@ -110,7 +116,12 @@ public class PyroniteRace extends AbstractRace {
 
     @Override
     public float getFallDamageResistance() {
-        return 7f;
+        return 15f;
+    }
+
+    @Override
+    public float getFallDamageMultiplier() {
+        return 0.1f;
     }
 
     @Override
@@ -250,17 +261,103 @@ public class PyroniteRace extends AbstractRace {
     public void holdSkill3() {
         if(!isWet()){
             skill3.hold(player);
+        }else{
+            releaseSkill3();
         }
     }
 
     @Override
     public void releaseSkill3() {
+        skill3.release(player);
+    }
+
+    @Override
+    public FlySkill getSkill4() {
+        return skill4;
+    }
+
+    @Override
+    public void useSkill4() {
+        if(isWet()){
+            if(!player.level().isClientSide()){
+                ServerLevel serverLevel = (ServerLevel) player.level();
+                serverLevel.sendParticles(
+                        ParticleTypes.LARGE_SMOKE,
+                        player.getX(),
+                        player.getY() + 1,
+                        player.getZ(),
+                        15,
+                        0.2,
+                        0.2,
+                        0.2,
+                        0.05
+                );
+                serverLevel.playSound(null, player.getX(), player.getY(), player.getZ(),
+                        SoundEvents.LAVA_EXTINGUISH, SoundSource.PLAYERS, 1.0f, 1.0f);
+
+            }
+        }
+    }
+
+    @Override
+    public void holdSkill4() {
         if(!isWet()){
-            skill3.release(player);
+            if(skill4.hold(player)){
+                if(!player.level().isClientSide()){
+                    AABB impactArea = player.getBoundingBox().inflate(0.5f);
+
+                    List<LivingEntity> targets = player.level().getEntitiesOfClass(
+                            LivingEntity.class,
+                            impactArea,
+                            entity -> entity != player);
+
+                    for(LivingEntity entity : targets){
+                        if(entity.hurt(player.damageSources().playerAttack(player), 7.0f)){
+                            entity.setSecondsOnFire(5);
+
+                            entity.knockback(0.8d,
+                                    player.getX() - entity.getX(),
+                                    player.getZ() - entity.getZ());
+
+                        }
+
+
+
+                    }
+
+                }else{
+                    SoundManager.playSound(player, ModSounds.FLAMETHROWER.get(), 0.7f);
+                    for(int i = 0; i < 5; i++){
+                        double xOffSet = player.level().random.nextGaussian();
+                        double yOffSet = player.level().random.nextGaussian();
+                        double zOffSet = player.level().random.nextGaussian();
+
+                        double xSpd = (player.getLookAngle().x + xOffSet)*-0.1f;
+                        double ySpd = yOffSet * 0.05f;
+                        double zSpd = (player.getLookAngle().z + zOffSet)*-0.1f;
+
+                        player.level().addParticle(
+                                ParticleTypes.FLAME,
+                                player.getX(), player.getY() - 0.6, player.getZ(),
+                                xSpd, ySpd, zSpd
+                        );
+                    }
+
+                }
+
+            }
         }else{
-            skill3.setHolding(false);
+            releaseSkill4();
         }
 
+    }
+
+    @Override
+    public void releaseSkill4() {
+        if(player.level().isClientSide()){
+            SoundManager.stopSound(player, ModSounds.FLAMETHROWER.get());
+        }
+        skill4.release(player);
     }
 
     @Override
@@ -366,6 +463,10 @@ public class PyroniteRace extends AbstractRace {
         controllers.add(new AnimationController<GeoAnimatable>(this, "pyronite_pose_controller", 2, state -> {
             if(isInFirstPersonView()){
                 return PlayState.STOP;
+            }
+
+            if(this.skill4.isOnUse()){
+                return state.setAndContinue(RawAnimation.begin().thenPlayAndHold("fly_skill"));
             }
 
             Entity e = state.getData(DataTickets.ENTITY);

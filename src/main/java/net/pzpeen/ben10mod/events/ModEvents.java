@@ -279,6 +279,7 @@ public class ModEvents {
                 if(race != null){
                     float newDistance = Math.max(0f, event.getDistance() - race.getFallDamageResistance());
                     event.setDistance(newDistance);
+                    event.setDamageMultiplier(event.getDamageMultiplier() * race.getFallDamageMultiplier());
                 }
 
             }

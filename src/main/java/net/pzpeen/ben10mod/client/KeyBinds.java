@@ -145,7 +145,9 @@ public class KeyBinds {
         }
 
         //Using Skill1
-        if(KeyBinds.SKILL_1.consumeClick() && !ClientEvents.ClientForgeEvents.wasHoldingSkill1){
+        if(KeyBinds.SKILL_1.consumeClick() && !(ClientEvents.ClientForgeEvents.wasHoldingSkill1
+                || ClientEvents.ClientForgeEvents.wasHoldingSkill2 || ClientEvents.ClientForgeEvents.wasHoldingSkill3
+                || ClientEvents.ClientForgeEvents.wasHoldingSkill4 || ClientEvents.ClientForgeEvents.wasHoldingSkill5)){
             AbstractClientPlayer player = Minecraft.getInstance().player;
             assert player != null;
 
@@ -156,7 +158,9 @@ public class KeyBinds {
         }
 
         //Using Skill2
-        if(KeyBinds.SKILL_2.consumeClick() && !ClientEvents.ClientForgeEvents.wasHoldingSkill2){
+        if(KeyBinds.SKILL_2.consumeClick() && !(ClientEvents.ClientForgeEvents.wasHoldingSkill1
+                || ClientEvents.ClientForgeEvents.wasHoldingSkill2 || ClientEvents.ClientForgeEvents.wasHoldingSkill3
+                || ClientEvents.ClientForgeEvents.wasHoldingSkill4 || ClientEvents.ClientForgeEvents.wasHoldingSkill5)){
             AbstractClientPlayer player = Minecraft.getInstance().player;
             assert player != null;
 
@@ -167,7 +171,9 @@ public class KeyBinds {
         }
 
         //Using Skill3
-        if(KeyBinds.SKILL_3.consumeClick() && !ClientEvents.ClientForgeEvents.wasHoldingSkill3){
+        if(KeyBinds.SKILL_3.consumeClick() && !(ClientEvents.ClientForgeEvents.wasHoldingSkill1
+                || ClientEvents.ClientForgeEvents.wasHoldingSkill2 || ClientEvents.ClientForgeEvents.wasHoldingSkill3
+                || ClientEvents.ClientForgeEvents.wasHoldingSkill4 || ClientEvents.ClientForgeEvents.wasHoldingSkill5)){
             AbstractClientPlayer player = Minecraft.getInstance().player;
             assert player != null;
 
@@ -178,7 +184,9 @@ public class KeyBinds {
         }
 
         //Using Skill4
-        if(KeyBinds.SKILL_4.consumeClick() && !ClientEvents.ClientForgeEvents.wasHoldingSkill4){
+        if(KeyBinds.SKILL_4.consumeClick() && !(ClientEvents.ClientForgeEvents.wasHoldingSkill1
+                || ClientEvents.ClientForgeEvents.wasHoldingSkill2 || ClientEvents.ClientForgeEvents.wasHoldingSkill3
+                || ClientEvents.ClientForgeEvents.wasHoldingSkill4 || ClientEvents.ClientForgeEvents.wasHoldingSkill5)){
             AbstractClientPlayer player = Minecraft.getInstance().player;
             assert player != null;
 
@@ -189,7 +197,9 @@ public class KeyBinds {
         }
 
         //Using Skill5
-        if(KeyBinds.SKILL_5.consumeClick() && !ClientEvents.ClientForgeEvents.wasHoldingSkill5){
+        if(KeyBinds.SKILL_5.consumeClick() && !(ClientEvents.ClientForgeEvents.wasHoldingSkill1
+                || ClientEvents.ClientForgeEvents.wasHoldingSkill2 || ClientEvents.ClientForgeEvents.wasHoldingSkill3
+                || ClientEvents.ClientForgeEvents.wasHoldingSkill4 || ClientEvents.ClientForgeEvents.wasHoldingSkill5)){
             AbstractClientPlayer player = Minecraft.getInstance().player;
             assert player != null;
 
