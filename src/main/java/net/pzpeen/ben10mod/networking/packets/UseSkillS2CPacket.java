@@ -52,6 +52,7 @@ public class UseSkillS2CPacket {
                                         race.getSkill1().setHolding(true);
                                         break;
                                     case 'r':
+                                        race.getSkill1().setHolding(false);
                                         race.releaseSkill1();
                                         break;
                                     default:
@@ -68,6 +69,7 @@ public class UseSkillS2CPacket {
                                         race.getSkill2().setHolding(true);
                                         break;
                                     case 'r':
+                                        race.getSkill2().setHolding(false);
                                         race.releaseSkill2();
                                         break;
                                     default:
@@ -84,6 +86,7 @@ public class UseSkillS2CPacket {
                                         race.getSkill3().setHolding(true);
                                         break;
                                     case 'r':
+                                        race.getSkill3().setHolding(false);
                                         race.releaseSkill3();
                                         break;
                                     default:
@@ -100,6 +103,7 @@ public class UseSkillS2CPacket {
                                         race.getSkill4().setHolding(true);
                                         break;
                                     case 'r':
+                                        race.getSkill4().setHolding(false);
                                         race.releaseSkill4();
                                         break;
                                     default:
@@ -116,6 +120,7 @@ public class UseSkillS2CPacket {
                                         race.getSkill5().setHolding(true);
                                         break;
                                     case 'r':
+                                        race.getSkill5().setHolding(false);
                                         race.releaseSkill5();
                                         break;
                                     default:

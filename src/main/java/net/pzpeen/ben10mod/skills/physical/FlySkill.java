@@ -54,7 +54,7 @@ public class FlySkill extends AbstractSkill {
             count = 0;
             startCooldown();
         }
-        return super.release(player);
+        return true;
     }
 
     @Override

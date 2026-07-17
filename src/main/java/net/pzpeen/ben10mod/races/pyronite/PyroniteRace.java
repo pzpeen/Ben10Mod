@@ -23,6 +23,7 @@ import net.pzpeen.ben10mod.skills.AbstractSkill;
 import net.pzpeen.ben10mod.skills.fire.FireBallSkill;
 import net.pzpeen.ben10mod.skills.fire.FireExtinguishSkill;
 import net.pzpeen.ben10mod.skills.fire.FlamethrowerSkill;
+import net.pzpeen.ben10mod.skills.physical.DownSlamSkill;
 import net.pzpeen.ben10mod.skills.physical.FlySkill;
 import net.pzpeen.ben10mod.sounds.ModSounds;
 import net.pzpeen.ben10mod.sounds.SoundManager;
@@ -47,7 +48,9 @@ public class PyroniteRace extends AbstractRace {
     private final FireBallSkill skill1 = new FireBallSkill();
     private final FireExtinguishSkill skill2 = new FireExtinguishSkill();
     private final FlamethrowerSkill skill3 = new FlamethrowerSkill(player);
-    private final FlySkill skill4 = new FlySkill();
+    private final FlySkill skill4A = new FlySkill();
+    private final DownSlamSkill skill4B = new DownSlamSkill(true);
+    private AbstractSkill skill4OnUse = skill4A;
 
     public PyroniteRace() {
         super();
@@ -271,9 +274,17 @@ public class PyroniteRace extends AbstractRace {
         skill3.release(player);
     }
 
+    public FlySkill getSkill4A(){
+        return skill4A;
+    }
+
+    public DownSlamSkill getSkill4B(){
+        return skill4B;
+    }
+
     @Override
-    public FlySkill getSkill4() {
-        return skill4;
+    public AbstractSkill getSkill4() {
+        return skill4OnUse;
     }
 
     @Override
@@ -296,13 +307,41 @@ public class PyroniteRace extends AbstractRace {
                         SoundEvents.LAVA_EXTINGUISH, SoundSource.PLAYERS, 1.0f, 1.0f);
 
             }
+        } else if (player.onGround() && !skill4B.getCooldown().isActive()) {
+            skill4OnUse = skill4A;
+        }else if(!player.onGround() && !skill4A.getCooldown().isActive()) {
+            skill4OnUse = skill4B;
+            if(skill4B.use(player)){
+                if(player.level().isClientSide()){
+                    for(int i = 0; i < 10; i++){
+                        double xOffSet = (player.level().random.nextDouble() *2.0) -1.0;
+                        double yOffSet = player.level().random.nextDouble();
+                        double zOffSet = (player.level().random.nextDouble() *2.0) -1.0;
+
+                        double xSpd = xOffSet*0.05f;
+                        double ySpd = yOffSet * 0.01f;
+                        double zSpd = zOffSet*-0.05f;
+
+                        player.level().addParticle(
+                                ParticleTypes.FLAME,
+                                player.getX() + (xOffSet * 0.7), player.getY() - 0.3, player.getZ() + (zOffSet * 0.7),
+                                xSpd, ySpd, zSpd
+                        );
+                    }
+
+                }else{
+                    player.level().playSound(null, player.getX(), player.getY(), player.getZ(), SoundEvents.GHAST_SHOOT, SoundSource.PLAYERS, 1.0f, 1.4f);
+                }
+
+            }
         }
     }
 
     @Override
     public void holdSkill4() {
-        if(!isWet()){
-            if(skill4.hold(player)){
+        if(!isWet() && skill4OnUse.equals(skill4A)){
+            //Fly Skill process
+            if(skill4A.hold(player)){
                 if(!player.level().isClientSide()){
                     AABB impactArea = player.getBoundingBox().inflate(0.5f);
 
@@ -354,10 +393,33 @@ public class PyroniteRace extends AbstractRace {
 
     @Override
     public void releaseSkill4() {
-        if(player.level().isClientSide()){
-            SoundManager.stopSound(player, ModSounds.FLAMETHROWER.get());
+        if(skill4OnUse.equals(skill4A)){
+            if(player.level().isClientSide()){
+                SoundManager.stopSound(player, ModSounds.FLAMETHROWER.get());
+            }
+            skill4A.release(player);
         }
-        skill4.release(player);
+    }
+
+    @Override
+    public void tickSkill4() {
+        if(skill4B.tick(player)){
+            if(skill4B.getTickCount() > skill4B.getUpTime()){
+                if(player.level().isClientSide()){
+                    for(int i = 0; i < 10; i++){
+                        double xOffSet = (player.level().random.nextDouble() *2.0) -1.0;
+
+                        double zOffSet = (player.level().random.nextDouble() *2.0) -1.0;
+
+                        player.level().addParticle(
+                                ParticleTypes.FLAME,
+                                player.getX() + (xOffSet * 0.7), player.getY() - 0.1, player.getZ() + (zOffSet * 0.7),
+                                0, 0.02, 0
+                        );
+                    }
+                }
+            }
+        }
     }
 
     @Override
@@ -465,7 +527,7 @@ public class PyroniteRace extends AbstractRace {
                 return PlayState.STOP;
             }
 
-            if(this.skill4.isOnUse()){
+            if(this.skill4A.isOnUse()){
                 return state.setAndContinue(RawAnimation.begin().thenPlayAndHold("fly_skill"));
             }
 

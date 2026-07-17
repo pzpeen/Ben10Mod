@@ -180,7 +180,7 @@ public class FlamethrowerSkill extends AbstractSkill {
             }
 
         }
-        return super.release(player);
+        return true;
     }
 
     @Override

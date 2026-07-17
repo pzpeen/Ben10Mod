@@ -14,6 +14,19 @@ import java.util.Optional;
 
 public class ModUtilities {
 
+    public static void noDamageExplode(Player player, double x, double y, double z, float radius){
+        player.getPersistentData().putBoolean("noDmgExplosion", true);
+
+        player.level().explode(
+                player,
+                x, y, z,
+                radius,
+                Level.ExplosionInteraction.TNT);
+
+        player.getPersistentData().remove("noDmgExplosion");
+
+    }
+
     public static LivingEntity entityRaycast(Player player, double maxDistanceInBlocks){
         Level level = player.level();
 

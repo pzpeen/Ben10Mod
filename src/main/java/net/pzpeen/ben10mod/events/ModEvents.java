@@ -15,6 +15,7 @@ import net.minecraftforge.event.entity.living.LivingEquipmentChangeEvent;
 import net.minecraftforge.event.entity.living.LivingFallEvent;
 import net.minecraftforge.event.entity.living.LivingHurtEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.ExplosionEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import net.pzpeen.ben10mod.Ben10Mod;
@@ -340,29 +341,66 @@ public class ModEvents {
                     ((IBen10ModCapCache)event.player).ben10Mod$getCachedPowerCap().getPower().tick(event.player);
                 }
 
-                //Ticking holding skills
+                //Ticking holding skills and ticking skills
                 if(((IBen10ModCapCache)event.player).ben10Mod$getCachedRaceCap().getRace() != null){
                     AbstractRace race = ((IBen10ModCapCache)event.player).ben10Mod$getCachedRaceCap().getRace();
-                    if(race.getSkill1() != null && race.getSkill1().isHolding()){
-                        race.holdSkill1();
+                    if(race.getSkill1() != null){
+                        if(race.getSkill1().isHolding()){
+                            race.holdSkill1();
+                        }
+                        if(race.getSkill1().isTicking()){
+                            race.tickSkill1();
+                        }
+
                     }
-                    if(race.getSkill2() != null && race.getSkill2().isHolding()){
-                        race.holdSkill2();
+                    if(race.getSkill2() != null){
+                        if(race.getSkill2().isHolding()){
+                            race.holdSkill2();
+                        }
+                        if(race.getSkill2().isTicking()){
+                            race.tickSkill2();
+                        }
                     }
-                    if(race.getSkill3() != null && race.getSkill3().isHolding()){
-                        race.holdSkill3();
+                    if(race.getSkill3() != null){
+                        if(race.getSkill3().isHolding()){
+                            race.holdSkill3();
+                        }
+                        if(race.getSkill3().isTicking()){
+                            race.tickSkill3();
+                        }
                     }
-                    if(race.getSkill4() != null && race.getSkill4().isHolding()){
-                        race.holdSkill4();
+                    if(race.getSkill4() != null){
+                        if(race.getSkill4().isHolding()){
+                            race.holdSkill4();
+                        }
+                        if(race.getSkill4().isTicking()){
+                            race.tickSkill4();
+                        }
                     }
-                    if(race.getSkill5() != null && race.getSkill5().isHolding()){
-                        race.holdSkill5();
+                    if(race.getSkill5() != null){
+                        if(race.getSkill5().isHolding()){
+                            race.holdSkill5();
+                        }
+                        if(race.getSkill5().isTicking()){
+                            race.tickSkill5();
+                        }
                     }
 
                 }
 
 
             }
+        }
+
+        @SubscribeEvent
+        public static void onExplosion(ExplosionEvent.Detonate event){
+            if(event.getExplosion().getExploder() instanceof Player player){
+                if(player.getPersistentData().getBoolean("noDmgExplosion")){
+                    event.getAffectedEntities().clear();
+                }
+
+            }
+
         }
 
 

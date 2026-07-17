@@ -125,6 +125,8 @@ public abstract class AbstractRace implements GeoAnimatable {
 
     public void releaseSkill1(){}
 
+    public void tickSkill1(){}
+
     public AbstractSkill getSkill2(){return  null;}
 
     public void useSkill2(){}
@@ -132,6 +134,8 @@ public abstract class AbstractRace implements GeoAnimatable {
     public void holdSkill2(){}
 
     public void releaseSkill2(){}
+
+    public void tickSkill2(){}
 
     public AbstractSkill getSkill3(){return  null;}
 
@@ -141,6 +145,8 @@ public abstract class AbstractRace implements GeoAnimatable {
 
     public void releaseSkill3(){}
 
+    public void tickSkill3(){}
+
     public AbstractSkill getSkill4(){return  null;}
 
     public void useSkill4(){}
@@ -149,6 +155,8 @@ public abstract class AbstractRace implements GeoAnimatable {
 
     public void releaseSkill4(){}
 
+    public void tickSkill4(){}
+
     public AbstractSkill getSkill5(){return  null;}
 
     public void useSkill5(){}
@@ -156,6 +164,8 @@ public abstract class AbstractRace implements GeoAnimatable {
     public void holdSkill5(){}
 
     public void releaseSkill5(){}
+
+    public void tickSkill5(){}
 
     public boolean customAlienArmAnimations(RenderHandEvent event, PoseStack PoseStack, MultiBufferSource bufferSource, int packedLight, float partialTick, AlienArmRenderer renderer){
         return false;

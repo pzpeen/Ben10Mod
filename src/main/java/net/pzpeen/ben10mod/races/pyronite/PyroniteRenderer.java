@@ -148,7 +148,7 @@ public class PyroniteRenderer implements GeoRenderer<PyroniteRace> {
 
             @Override
             public void render(PoseStack poseStack, PyroniteRace animatable, BakedGeoModel bakedModel, RenderType renderType, MultiBufferSource bufferSource, VertexConsumer buffer, float partialTick, int packedLight, int packedOverlay) {
-                if(!animatable.getSkill4().isOnUse()){
+                if(!animatable.getSkill4A().isOnUse() || !animatable.getSkill4().equals(animatable.getSkill4A())){
                     return;
                 }
 

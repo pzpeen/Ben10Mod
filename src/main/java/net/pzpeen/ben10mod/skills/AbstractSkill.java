@@ -8,6 +8,7 @@ public abstract class AbstractSkill {
     protected int maxCooldown;
     protected ModUtilities.TickTimer cooldown = new ModUtilities.TickTimer();
     private boolean holding = false;
+    protected boolean ticking = false;
 
     public void setMaxCooldown(int maxCooldown){
         this.maxCooldown = maxCooldown;
@@ -30,19 +31,24 @@ public abstract class AbstractSkill {
     }
 
     public boolean isOnUse(){
-        if(isHolding() && !cooldown.isActive()){
+        if(isHolding() && !cooldown.isActive() || ticking){
             return true;
         }
         return false;
+    }
+
+    public boolean isTicking() {
+        return ticking;
     }
 
     public boolean use(Player player){return false;};
 
     public boolean hold(Player player){return false;}
 
-    public boolean release(Player player){
-        setHolding(false);
-        return true;
+    public boolean release(Player player){return false;}
+
+    public boolean tick(Player player){
+        return false;
     }
 
     public abstract ResourceLocation getIcon();
